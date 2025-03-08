@@ -1,12 +1,12 @@
 package frc.robot.subsystems.climber;
 
-
+import org.littletonrobotics.junction.AutoLog;
 
 public interface ClimberIO {
 
     public void updateInputs(ClimberIOInputs inputs);
 
-
+    @AutoLog
     public class ClimberIOInputs {
         public double position = 0;
         public double speed = 0;

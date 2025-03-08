@@ -2,31 +2,38 @@ package frc.robot.subsystems.climber;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.ClimberConstants;
 import frc.robot.subsystems.climber.ClimberIO.ClimberIOInputs;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ClimberSubsystem extends SubsystemBase {
 
-    private ClimberIO piviotIO;
+    private ClimberIO climberIO;
     private ClimberIOInputs climberInputs = new ClimberIOInputs();
 
     // NetworkTableInstance nInstance = NetworkTableInstance.getDefault();
     // NetworkTable table = nInstance.getTable("SmartDashboard");
     // NetworkTableValue climbervoltage = table.getValue("climbervoltage");
 
-    // LoggedNetworkNumber climbervoltage = new LoggedNetworkNumber("Climber Voltage", 0);
+    LoggedNetworkNumber climbervoltage = new LoggedNetworkNumber("Climber Voltage", 0);
+    LoggedNetworkNumber climberHeadVoltage =
+            new LoggedNetworkNumber("Climber Head (Winch) Voltage", 0);
 
     public ClimberSubsystem(ClimberIO climberIO) {
-        this.piviotIO = climberIO;
-        setDefaultCommand(stop());
+
+        this.climberIO = climberIO;
+
+        setDefaultCommand(stopClimber());
     }
 
     public void periodic() {
 
-        piviotIO.updateInputs(climberInputs);
+        climberIO.updateInputs(climberInputs);
 
         // Logger.processInputs("RealOutputs/Climber", climberInputs);
-
+        
         // if (climberInputs.voltage < 0 && climberInputs.position <= lowerLimit) {
         //     this.piviotIO.setVoltage(0);
         // }
@@ -36,40 +43,41 @@ public class ClimberSubsystem extends SubsystemBase {
         // }
     }
 
+    // Here begins the winch climber motor commands
     public Command zeroClimberCommand() {
         return runOnce(
                 () -> {
-                    piviotIO.resetPosition(0);
+                    climberIO.resetPosition(0);
                 });
     }
 
     public Command moveClimberUpVoltage() {
-        return setVoltage(12);
+        return setClimberVoltage(8);
     }
 
-    // public Command climberTuneable() {
-    //     return run(
-    //             () -> {
-    //                 double voltage = climbervoltage.get();
-    //                 piviotIO.setVoltage(voltage);
-    //             });
-    // }
-
-    public Command moveClimberDownVoltage() {
-        return setVoltage(-12);
-    }
-
-    public Command setVoltage(double voltage) {
+    public Command climberTuneable() {
         return run(
                 () -> {
-                    piviotIO.setVoltage(voltage);
+                    double voltage = climbervoltage.get();
+                    climberIO.setVoltage(voltage);
+                });
+    }
+
+    public Command moveClimberDownVoltage() {
+        return setClimberVoltage(-8);
+    }
+
+    public Command setClimberVoltage(double voltage) {
+        return run(
+                () -> {
+                    climberIO.setVoltage(voltage);
                 });
     }
 
     // public Command setPosition(double position) {
     //     return run(
     //             () -> {
-    //                 piviotIO.setPosition(position);
+    //                 climberIO.setPosition(position);
     //             });
     // }
 
@@ -80,21 +88,25 @@ public class ClimberSubsystem extends SubsystemBase {
     // public Command upPosition() {
     //     return run(
     //             () -> {
-    //                 piviotIO.setPosition(ClimberConstants.upperLimit);
+    //                 climberIO.setPosition(ClimberConstants.upperLimit);
     //             });
     // }
 
     // public Command downPosition() {
     //     return run(
     //             () -> {
-    //                 piviotIO.setPosition(ClimberConstants.lowerLimit);
+    //                 climberIO.setPosition(ClimberConstants.lowerLimit);
     //             });
     // }
 
-    public Command stop() {
+    public Command stopClimber() {
         return run(
                 () -> {
-                    piviotIO.setVoltage(0);
+                    climberIO.setVoltage(0);
+       
                 });
     }
+
+    // Here begins climber head commands
+    
 }
