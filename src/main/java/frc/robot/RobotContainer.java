@@ -13,11 +13,13 @@ import frc.lib.controller.ThrustmasterJoystick;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.climber.ClimberIOSim;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -35,10 +37,22 @@ public class RobotContainer {
     private final ThrustmasterJoystick rightJoystick = new ThrustmasterJoystick(0);
     private final ThrustmasterJoystick leftJoystick = new ThrustmasterJoystick(1);
 
+    private final LogitechController operatorController = new LogitechController(2);
+
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    public final ClimberSubsystem climber;
 
     public RobotContainer() {
         configureBindings();
+
+        if(Robot.isReal()){
+            climber = new ClimberSubsystem(new ClimberIOTalonFX());
+        }
+        else {
+            climber = new ClimberSubsystem(new ClimberIOSim());
+        }
+
     }
 
     private void configureBindings() {
@@ -68,6 +82,11 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press 
         // rightJoystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())); 
+
+        operatorController.getX().onTrue(climber.upPosition());
+        operatorController.getY().onTrue(climber.downPosition());
+        operatorController.getA().whileTrue(climber.setClimberVoltage(8));
+        operatorController.getB().whileTrue(climber.setClimberVoltage(-8));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
