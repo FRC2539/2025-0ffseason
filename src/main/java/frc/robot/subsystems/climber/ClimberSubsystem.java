@@ -11,7 +11,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 public class ClimberSubsystem extends SubsystemBase {
 
     private ClimberIO climberIO;
-    private ClimberIOInputs climberInputs = new ClimberIOInputs();
+    private ClimberIOInputsAutoLogged climberInputs = new ClimberIOInputsAutoLogged();
 
     // NetworkTableInstance nInstance = NetworkTableInstance.getDefault();
     // NetworkTable table = nInstance.getTable("SmartDashboard");
@@ -32,7 +32,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
         climberIO.updateInputs(climberInputs);
 
-        // Logger.processInputs("RealOutputs/Climber", climberInputs);
+        Logger.processInputs("RealOutputs/Climber", climberInputs);
         
         // if (climberInputs.voltage < 0 && climberInputs.position <= lowerLimit) {
         //     this.piviotIO.setVoltage(0);
@@ -74,30 +74,30 @@ public class ClimberSubsystem extends SubsystemBase {
                 });
     }
 
-    // public Command setPosition(double position) {
-    //     return run(
-    //             () -> {
-    //                 climberIO.setPosition(position);
-    //             });
-    // }
+    public Command setPosition(double position) {
+        return run(
+                () -> {
+                    climberIO.setPosition(position);
+                });
+    }
 
     public double getPosition() {
         return climberInputs.position;
     }
 
-    // public Command upPosition() {
-    //     return run(
-    //             () -> {
-    //                 climberIO.setPosition(ClimberConstants.upperLimit);
-    //             });
-    // }
+    public Command upPosition() {
+        return run(
+                () -> {
+                    climberIO.setPosition(ClimberConstants.upperLimit);
+                });
+    }
 
-    // public Command downPosition() {
-    //     return run(
-    //             () -> {
-    //                 climberIO.setPosition(ClimberConstants.lowerLimit);
-    //             });
-    // }
+    public Command downPosition() {
+        return run(
+                () -> {
+                    climberIO.setPosition(ClimberConstants.lowerLimit);
+                });
+    }
 
     public Command stopClimber() {
         return run(

@@ -15,7 +15,7 @@ public interface ClimberIO {
         public double current = 0;
     }
 
-    // public void setPosition(double position);
+    public void setPosition(double position);
 
     public void setVoltage(double voltage);
 
