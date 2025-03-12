@@ -44,7 +44,7 @@ public class RobotContainer {
     public final ClimberSubsystem climber;
 
     public RobotContainer() {
-        configureBindings();
+        
 
         if(Robot.isReal()){
             climber = new ClimberSubsystem(new ClimberIOTalonFX());
@@ -53,7 +53,9 @@ public class RobotContainer {
             climber = new ClimberSubsystem(new ClimberIOSim());
         }
 
-    }
+        configureBindings();
+
+    }           
 
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
@@ -61,9 +63,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> 
-                drive.withVelocityX(rightJoystick.getYAxis().getRaw() * MaxSpeed * 0.3) // Drive forward with negative Y (forward) POSSIBLY READD - TO FIX ANY INVERT ISSUES
-                    .withVelocityY(-rightJoystick.getXAxis().getRaw() * MaxSpeed * 0.3) // Drive left with negative X (left)
-                    .withRotationalRate(-rightJoystick.getZAxis().getRaw() * MaxAngularRate * 0.3) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-leftJoystick.getXAxis().getRaw() * MaxSpeed * 0.3) // Drive forward with negative Y (forward) POSSIBLY READD - TO FIX ANY INVERT ISSUES
+                    .withVelocityY(leftJoystick.getYAxis().getRaw() * MaxSpeed * 0.3) // Drive left with negative X (left)
+                    .withRotationalRate(-rightJoystick.getXAxis().getRaw() * MaxAngularRate * 0.3) // Drive counterclockwise with negative X (left)
             )
         );
 
