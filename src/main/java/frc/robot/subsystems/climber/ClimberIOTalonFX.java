@@ -25,10 +25,10 @@ public class ClimberIOTalonFX implements ClimberIO {
 
         SoftwareLimitSwitchConfigs softwareLimitSwitchConfigs =
                 new SoftwareLimitSwitchConfigs()
-                        .withForwardSoftLimitEnable(true)
+                        .withForwardSoftLimitEnable(false)
                         .withForwardSoftLimitThreshold(ClimberConstants.upperLimit)
                         .withReverseSoftLimitThreshold(ClimberConstants.lowerLimit)
-                        .withReverseSoftLimitEnable(true);
+                        .withReverseSoftLimitEnable(false);
 
         talonConfig.apply(
                 new TalonFXConfiguration()

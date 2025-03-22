@@ -63,9 +63,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> 
-                drive.withVelocityX(-leftJoystick.getXAxis().getRaw() * MaxSpeed * 0.3) // Drive forward with negative Y (forward) POSSIBLY READD - TO FIX ANY INVERT ISSUES
-                    .withVelocityY(leftJoystick.getYAxis().getRaw() * MaxSpeed * 0.3) // Drive left with negative X (left)
-                    .withRotationalRate(-rightJoystick.getXAxis().getRaw() * MaxAngularRate * 0.3) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-Math.pow(leftJoystick.getXAxis().getRaw(),3) * MaxSpeed * 0.3) // Drive forward with negative Y (forward) POSSIBLY READD - TO FIX ANY INVERT ISSUES
+                    .withVelocityY(Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed * 0.3) // Drive left with negative X (left)
+                    .withRotationalRate(Math.pow(-rightJoystick.getXAxis().getRaw(), 3) * MaxAngularRate * 0.3).withDeadband(0.02) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -83,10 +83,10 @@ public class RobotContainer {
         // rightJoystick.getTrigger().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse)); stupid lets do this later
 
         // reset the field-centric heading on left bumper press 
-        // rightJoystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())); 
+        operatorController.getLeftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())); 
 
-        operatorController.getX().onTrue(climber.upPosition());
-        operatorController.getY().onTrue(climber.downPosition());
+        // operatorController.getX().onTrue(climber.upPosition());
+        // operatorController.getY().onTrue(climber.downPosition());
         operatorController.getA().whileTrue(climber.setClimberVoltage(8));
         operatorController.getB().whileTrue(climber.setClimberVoltage(-8));
 
