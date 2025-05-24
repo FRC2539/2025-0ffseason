@@ -15,11 +15,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
-import frc.robot.generated.TunerConstants;
+import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.climber.ClimberIOSim;
-import frc.robot.subsystems.climber.ClimberIOTalonFX;
-import frc.robot.subsystems.climber.ClimberSubsystem;
+import frc.robot.subsystems.elevator.ElevatorIOKraken;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.elevator.ElevatorIOKraken;
+
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -41,16 +43,17 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public final ClimberSubsystem climber;
+    public final ElevatorSubsystem elevator;
+
+
 
     public RobotContainer() {
         
-
-        if(Robot.isReal()){
-            climber = new ClimberSubsystem(new ClimberIOTalonFX());
+        if(Robot.isReal()){;
+            elevator = new ElevatorSubsystem(new ElevatorIOKraken());
         }
         else {
-            climber = new ClimberSubsystem(new ClimberIOSim());
+            elevator = new ElevatorSubsystem(new ElevatorIOSim());
         }
 
         configureBindings();
@@ -87,8 +90,7 @@ public class RobotContainer {
 
         // operatorController.getX().onTrue(climber.upPosition());
         // operatorController.getY().onTrue(climber.downPosition());
-        operatorController.getA().whileTrue(climber.setClimberVoltage(8));
-        operatorController.getB().whileTrue(climber.setClimberVoltage(-8));
+
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

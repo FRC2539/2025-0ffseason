@@ -11,9 +11,15 @@ public class ElevatorIOSim implements ElevatorIO{
     private double speed = 0;
     private double positionSetpoint = 0;
 
-    private PIDController pidCon = new PIDController(5, 0, 0);
+    private PIDController pidController = new PIDController(5, 0, 0);
 
     private boolean positionControl = false;
+
+    public void updateInputs(ElevatorIOInputs inputs) {
+        if (positionControl) {
+            voltage = pidController.calculate(position, positionSetpoint);
+        }
+    }
 
     public void setPosition(double pos){
         positionControl = true;
@@ -27,5 +33,9 @@ public class ElevatorIOSim implements ElevatorIO{
     public void setVoltage(double vol){
         positionControl = false;
         voltage = vol;
+    }
+
+    public void resetPosition() {
+        position = 0;
     }
 }

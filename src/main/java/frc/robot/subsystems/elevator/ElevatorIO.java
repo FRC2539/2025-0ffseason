@@ -3,9 +3,11 @@ package frc.robot.subsystems.elevator;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ElevatorIO {
+
+    public void updateInputs(ElevatorIOInputs inputs);
     
     @AutoLog
-    public class ClimberIOInputs {
+    public class ElevatorIOInputs {
         public double position = 0;
         public double speed = 0;
         public double voltage;
@@ -16,7 +18,7 @@ public interface ElevatorIO {
 
     public void setPosition(double pos);
 
-    public void setSpeed(double speed);
-
     public void setVoltage(double vol);
+
+    public void resetPosition();
 }
