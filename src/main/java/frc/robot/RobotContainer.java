@@ -17,10 +17,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.elevator.ElevatorIOKraken;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
-import frc.robot.subsystems.elevator.ElevatorIOKraken;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 
 
 public class RobotContainer {
@@ -50,7 +50,7 @@ public class RobotContainer {
     public RobotContainer() {
         
         if(Robot.isReal()){;
-            elevator = new ElevatorSubsystem(new ElevatorIOKraken());
+            elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
         }
         else {
             elevator = new ElevatorSubsystem(new ElevatorIOSim());
