@@ -17,6 +17,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Placer.PlacerIO;
+import frc.robot.subsystems.Placer.PlacerIOSim;
+import frc.robot.subsystems.Placer.PlacerIOTalonFX;
+import frc.robot.subsystems.Placer.PlacerSubsystem;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
@@ -42,8 +46,8 @@ public class RobotContainer {
     private final LogitechController operatorController = new LogitechController(2);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
     public final ElevatorSubsystem elevator;
+    public final PlacerSubsystem placer;
 
 
 
@@ -51,9 +55,11 @@ public class RobotContainer {
         
         if(Robot.isReal()){;
             elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
+            placer = new PlacerSubsystem(new PlacerIOTalonFX());
         }
         else {
             elevator = new ElevatorSubsystem(new ElevatorIOSim());
+            placer = new PlacerSubsystem(new PlacerIOSim());
         }
 
         configureBindings();
@@ -91,8 +97,12 @@ public class RobotContainer {
         // operatorController.getX().onTrue(climber.upPosition());
         // operatorController.getY().onTrue(climber.downPosition());
 
-
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        operatorController.getRightTrigger().onTrue(placer.runOnce(() -> placer.placePiece()));
+        operatorController.getDPadDown().whileTrue(placer.run(() -> placer.intake(2)));
+        operatorController.getDPadUp().whileTrue(placer.run(() -> placer.ejectReverse(2)));
+        operatorController.getDPadLeft().onTrue(placer.run(() -> placer.intakeUntilPieceContained()));
     }
 
     public Command getAutonomousCommand() {
