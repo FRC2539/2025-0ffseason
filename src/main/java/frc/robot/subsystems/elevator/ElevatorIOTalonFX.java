@@ -11,7 +11,7 @@ import com.ctre.phoenix6.controls.Follower;
 import frc.robot.constants.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 
-public class ElevatorIOKraken implements ElevatorIO{
+public class ElevatorIOTalonFX implements ElevatorIO{
     
     //Set IDs later
     private TalonFX elevatorLeader = new TalonFX(0, ElevatorConstants.elevatorLeaderCanbus);
@@ -19,7 +19,7 @@ public class ElevatorIOKraken implements ElevatorIO{
 
     private final MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
-    public ElevatorIOKraken(){
+    public ElevatorIOTalonFX(){
         elevatorFollower.setPosition(0);
 
         motionMagicVoltage.withSlot(0);
