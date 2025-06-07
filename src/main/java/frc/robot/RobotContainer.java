@@ -99,7 +99,7 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        operatorController.getRightTrigger().onTrue(placer.runOnce(() -> placer.placePiece()));
+        rightJoystick.getTrigger().onTrue(placer.runOnce(() -> placer.placePiece()));
         operatorController.getDPadDown().whileTrue(placer.run(() -> placer.intake(2)));
         operatorController.getDPadUp().whileTrue(placer.run(() -> placer.ejectReverse(2)));
         operatorController.getDPadLeft().onTrue(placer.run(() -> placer.intakeUntilPieceContained()));
