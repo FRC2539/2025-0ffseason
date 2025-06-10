@@ -6,16 +6,25 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Set;
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.lib.controller.LogitechController;
 import frc.lib.controller.ThrustmasterJoystick;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
+import frc.robot.commands.AlignAndDriveToReef;
+import frc.robot.commands.AlignToReef;
+import frc.robot.constants.AligningConstants;
 import frc.robot.constants.TunerConstants;
+import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Placer.PlacerIO;
 import frc.robot.subsystems.Placer.PlacerIOSim;
@@ -48,6 +57,11 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final ElevatorSubsystem elevator;
     public final PlacerSubsystem placer;
+
+    private DoubleSupplier leftJoystickVelocityX;
+    private DoubleSupplier leftJoystickVelocityY;
+    private DoubleSupplier rightJoystickVelocityTheta;
+
 
 
 
@@ -108,4 +122,57 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return Commands.print("No autonomous command configured");
     }
+
+    public Command alignToReef(int tag, double offset, Rotation2d rotOffset) {
+        Pose2d alignmentPose =
+                VisionConstants.aprilTagLayout
+                        .getTagPose(tag)
+                        .get()
+                        .toPose2d()
+                        .plus(
+                                new Transform2d(
+                                        new Translation2d(AligningConstants.reefDistance, offset),
+                                        rotOffset));
+        return new AlignToReef(
+                drivetrain,
+                leftJoystickVelocityX,
+                leftJoystickVelocityY,
+                0,
+                alignmentPose,
+                Rotation2d.kPi);
+    }
+
+    public Command alignToReef(int tag, double offset) {
+        return alignToReef(tag, offset, Rotation2d.kZero);
+    }
+
+    // Automatically chooses closest tag
+    public Command alignToReef(double offset) {
+        return Commands.defer(
+                () -> {
+                    Pose2d alignmentPose = drivetrain.findNearestAprilTagPose();
+                    return new AlignToReef(
+                            drivetrain,
+                            leftJoystickVelocityX,
+                            leftJoystickVelocityY,
+                            offset,
+                            alignmentPose,
+                            Rotation2d.kPi);
+                },
+                Set.of(drivetrain));
+    }
+
+    public Command alignAndDriveToReef(int tag, double offset) {
+        Pose2d alignmentPose =
+                VisionConstants.aprilTagLayout
+                        .getTagPose(tag)
+                        .get()
+                        .toPose2d()
+                        .plus(
+                                new Transform2d(
+                                        new Translation2d(AligningConstants.reefDistance, offset),
+                                        new Rotation2d()));
+        return new AlignAndDriveToReef(drivetrain, 0, alignmentPose, Rotation2d.kPi);
+    }
+
 }

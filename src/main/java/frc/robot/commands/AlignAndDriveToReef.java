@@ -1,45 +1,32 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
-import java.util.function.DoubleSupplier;
-import org.littletonrobotics.junction.Logger;
-
-public class AlignToReef extends Command {
+public class AlignAndDriveToReef extends Command {
     private CommandSwerveDrivetrain drivetrain;
 
-    private DoubleSupplier xVelocity;
-    private DoubleSupplier yVelocity;
-
-    private PIDController thetaController = new PIDController(4, 0, 0);
-    // private ProfiledPIDController yController = new ProfiledPIDController(8, 0, 0, new
-    // TrapezoidProfile.Constraints(5.5, 8));
-    private PIDController yController = new PIDController(8, 0, 0);
-
+    private PIDController thetaController = new PIDController(6, 0, 0);
+    private ProfiledPIDController yController = new ProfiledPIDController(8, 0, 0, new TrapezoidProfile.Constraints(5.5, 8));
+    private PIDController xController = new PIDController(8, 0, 0);
     private Pose2d targetPose;
     private double offset;
     private Rotation2d rotationOffset;
 
-    private Timer slewerTimer = new Timer();
-
-    public AlignToReef(
+    public AlignAndDriveToReef(
             CommandSwerveDrivetrain drivetrain,
-            DoubleSupplier xVelocity,
-            DoubleSupplier yVelocity,
             double alignmentOffset,
             Pose2d alignmentPose,
             Rotation2d rotationOffset) {
         this.drivetrain = drivetrain;
-        this.xVelocity = xVelocity;
-        this.yVelocity = yVelocity;
         this.offset = alignmentOffset;
         this.targetPose = alignmentPose;
         this.rotationOffset = rotationOffset;
@@ -51,17 +38,13 @@ public class AlignToReef extends Command {
         // Camera id
         // tagId
         // Rotation to face the tag
-        slewerTimer.restart();
-        Pose2d tCurrentPose = drivetrain.getState().Pose;
-        Logger.recordOutput("/AutoAlign/CurrentPose", tCurrentPose);
-        Logger.recordOutput("/AutoAlign/TargetPose", targetPose);
-        Logger.recordOutput("/AutoAlign/Offset", offset);
 
         thetaController.setSetpoint(rotationOffset.getRadians());
-        yController.setSetpoint(offset);
+        yController.setGoal(offset);
         thetaController.enableContinuousInput(0, 2 * Math.PI);
-        thetaController.setTolerance(Units.degreesToRadians(0.5));
-        yController.setTolerance(Units.inchesToMeters(0.2));
+        thetaController.setTolerance(Units.degreesToRadians(3));
+        yController.setTolerance(Units.inchesToMeters(0.4));
+        xController.setTolerance(Units.inchesToMeters(0.4));
     }
 
     @Override
@@ -79,21 +62,18 @@ public class AlignToReef extends Command {
         if (yController.atSetpoint()) {
             yVelocityController = 0;
         }
+        double xVelocityController = xController.calculate(offset.getX());
+        if (xController.atSetpoint()) {
+            xVelocityController = 0;
+        }
 
         Rotation2d tagRotation = targetPose.getRotation();
 
-        ChassisSpeeds driverCommandedVelocities =
-                new ChassisSpeeds(xVelocity.getAsDouble(), yVelocity.getAsDouble(), 0);
-
-        ChassisSpeeds fieldCommandedVelocities =
-                ChassisSpeeds.fromRobotRelativeSpeeds(
-                        driverCommandedVelocities, drivetrain.getOperatorForwardDirection());
-
-        ChassisSpeeds tagRelativeCommandedVelocities =
-                ChassisSpeeds.fromFieldRelativeSpeeds(fieldCommandedVelocities, tagRotation);
+        ChassisSpeeds tagRelativeCommandedVelocities = new ChassisSpeeds();
 
         tagRelativeCommandedVelocities.vyMetersPerSecond = yVelocityController;
         tagRelativeCommandedVelocities.omegaRadiansPerSecond = thetaVelocity;
+        tagRelativeCommandedVelocities.vxMetersPerSecond = xVelocityController;
 
         ChassisSpeeds fieldRelativeSpeeds =
                 ChassisSpeeds.fromRobotRelativeSpeeds(tagRelativeCommandedVelocities, tagRotation);

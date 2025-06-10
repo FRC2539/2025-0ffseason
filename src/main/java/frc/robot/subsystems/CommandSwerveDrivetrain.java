@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.constants.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.constants.VisionConstants;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -184,6 +185,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             startSimThread();
         }
     }
+    
 
     /**
      * Returns a command that applies the specified control request to this swerve drivetrain.
@@ -286,4 +288,30 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
+
+    public Pose2d getRobotPose() {
+        return getState().Pose;
+    }
+
+    public Pose2d findNearestAprilTagPose() {
+        // TODO: filter out opposing side tags and non-reef tags
+        Pose2d currentPose = getRobotPose();
+        Pose2d nearestAprilTagPose = null;
+        double nearestDistance = Double.MAX_VALUE;
+
+        Pose2d[] aprilTagPoses = new Pose2d[6];
+
+        for (Pose2d tagPose : aprilTagPoses) {
+            double distance = currentPose.getTranslation().getDistance(tagPose.getTranslation());
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestAprilTagPose = tagPose;
+            }
+        }
+
+        return nearestAprilTagPose;
+    }
+
 }
+
+    
