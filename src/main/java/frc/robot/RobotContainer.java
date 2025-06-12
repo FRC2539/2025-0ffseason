@@ -55,8 +55,8 @@ public class RobotContainer {
     private final LogitechController operatorController = new LogitechController(2);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final ElevatorSubsystem elevator;
-    public final PlacerSubsystem placer;
+    // public final ElevatorSubsystem elevator;
+    // public final PlacerSubsystem placer;
 
     private DoubleSupplier leftJoystickVelocityX;
     private DoubleSupplier leftJoystickVelocityY;
@@ -67,14 +67,14 @@ public class RobotContainer {
 
     public RobotContainer() {
         
-        if(Robot.isReal()){;
-            elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
-            placer = new PlacerSubsystem(new PlacerIOTalonFX());
-        }
-        else {
-            elevator = new ElevatorSubsystem(new ElevatorIOSim());
-            placer = new PlacerSubsystem(new PlacerIOSim());
-        }
+        // if(Robot.isReal()){;
+        //     elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
+        //     placer = new PlacerSubsystem(new PlacerIOTalonFX());
+        // }
+        // else {
+        //     elevator = new ElevatorSubsystem(new ElevatorIOSim());
+        //     placer = new PlacerSubsystem(new PlacerIOSim());
+        // }
 
         configureBindings();
 
@@ -113,66 +113,66 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        rightJoystick.getTrigger().onTrue(placer.runOnce(() -> placer.placePiece()));
-        operatorController.getDPadDown().whileTrue(placer.run(() -> placer.intake(2)));
-        operatorController.getDPadUp().whileTrue(placer.run(() -> placer.ejectReverse(2)));
-        operatorController.getDPadLeft().onTrue(placer.run(() -> placer.intakeUntilPieceContained()));
+        // rightJoystick.getTrigger().onTrue(placer.runOnce(() -> placer.placePiece()));
+        // operatorController.getDPadDown().whileTrue(placer.run(() -> placer.intake(2)));
+        // operatorController.getDPadUp().whileTrue(placer.run(() -> placer.ejectReverse(2)));
+        // operatorController.getDPadLeft().onTrue(placer.run(() -> placer.intakeUntilPieceContained()));
     }
 
     public Command getAutonomousCommand() {
         return Commands.print("No autonomous command configured");
     }
 
-    public Command alignToReef(int tag, double offset, Rotation2d rotOffset) {
-        Pose2d alignmentPose =
-                VisionConstants.aprilTagLayout
-                        .getTagPose(tag)
-                        .get()
-                        .toPose2d()
-                        .plus(
-                                new Transform2d(
-                                        new Translation2d(AligningConstants.reefDistance, offset),
-                                        rotOffset));
-        return new AlignToReef(
-                drivetrain,
-                leftJoystickVelocityX,
-                leftJoystickVelocityY,
-                0,
-                alignmentPose,
-                Rotation2d.kPi);
-    }
+    // public Command alignToReef(int tag, double offset, Rotation2d rotOffset) {
+    //     Pose2d alignmentPose =
+    //             VisionConstants.aprilTagLayout
+    //                     .getTagPose(tag)
+    //                     .get()
+    //                     .toPose2d()
+    //                     .plus(
+    //                             new Transform2d(
+    //                                     new Translation2d(AligningConstants.reefDistance, offset),
+    //                                     rotOffset));
+    //     return new AlignToReef(
+    //             drivetrain,
+    //             leftJoystickVelocityX,
+    //             leftJoystickVelocityY,
+    //             0,
+    //             alignmentPose,
+    //             Rotation2d.kPi);
+    // }
 
-    public Command alignToReef(int tag, double offset) {
-        return alignToReef(tag, offset, Rotation2d.kZero);
-    }
+    // public Command alignToReef(int tag, double offset) {
+    //     return alignToReef(tag, offset, Rotation2d.kZero);
+    // }
 
-    // Automatically chooses closest tag
-    public Command alignToReef(double offset) {
-        return Commands.defer(
-                () -> {
-                    Pose2d alignmentPose = drivetrain.findNearestAprilTagPose();
-                    return new AlignToReef(
-                            drivetrain,
-                            leftJoystickVelocityX,
-                            leftJoystickVelocityY,
-                            offset,
-                            alignmentPose,
-                            Rotation2d.kPi);
-                },
-                Set.of(drivetrain));
-    }
+    // // Automatically chooses closest tag
+    // public Command alignToReef(double offset) {
+    //     return Commands.defer(
+    //             () -> {
+    //                 Pose2d alignmentPose = drivetrain.findNearestAprilTagPose();
+    //                 return new AlignToReef(
+    //                         drivetrain,
+    //                         leftJoystickVelocityX,
+    //                         leftJoystickVelocityY,
+    //                         offset,
+    //                         alignmentPose,
+    //                         Rotation2d.kPi);
+    //             },
+    //             Set.of(drivetrain));
+    // }
 
-    public Command alignAndDriveToReef(int tag, double offset) {
-        Pose2d alignmentPose =
-                VisionConstants.aprilTagLayout
-                        .getTagPose(tag)
-                        .get()
-                        .toPose2d()
-                        .plus(
-                                new Transform2d(
-                                        new Translation2d(AligningConstants.reefDistance, offset),
-                                        new Rotation2d()));
-        return new AlignAndDriveToReef(drivetrain, 0, alignmentPose, Rotation2d.kPi);
-    }
+    // public Command alignAndDriveToReef(int tag, double offset) {
+    //     Pose2d alignmentPose =
+    //             VisionConstants.aprilTagLayout
+    //                     .getTagPose(tag)
+    //                     .get()
+    //                     .toPose2d()
+    //                     .plus(
+    //                             new Transform2d(
+    //                                     new Translation2d(AligningConstants.reefDistance, offset),
+    //                                     new Rotation2d()));
+    //     return new AlignAndDriveToReef(drivetrain, 0, alignmentPose, Rotation2d.kPi);
+    // }
 
 }
