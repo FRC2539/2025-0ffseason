@@ -13,22 +13,14 @@ public class ElevatorSubsystem extends SubsystemBase{
     private ElevatorIO pivotIO;
     private ElevatorIOInputsAutoLogged elevatorInputs = new ElevatorIOInputsAutoLogged();
 
-    private SysIdRoutine elevatorSysIdRoutine =
-            new SysIdRoutine(new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(null, null, null));
+
 
     public ElevatorSubsystem(ElevatorIO elevatorIO){
         this.pivotIO = elevatorIO;
         setDefaultCommand(setVoltage(0));
     }
 
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction){
-        return elevatorSysIdRoutine.quasistatic(direction);
-        }
-
-    public Command sysIdDynamic(SysIdRoutine.Direction direction){
-        return elevatorSysIdRoutine.dynamic(direction);
-    }
-
+    
     public void periodic() {
 
         pivotIO.updateInputs(elevatorInputs);

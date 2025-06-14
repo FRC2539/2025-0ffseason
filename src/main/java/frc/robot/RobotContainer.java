@@ -27,7 +27,7 @@ import frc.robot.constants.TunerConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Placer.PlacerIOSim;
-import frc.robot.subsystems.Placer.PlacerIOTalonFX;
+import frc.robot.subsystems.Placer.PlacerIOSRX;
 import frc.robot.subsystems.Placer.PlacerSubsystem;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
@@ -61,7 +61,7 @@ public class RobotContainer {
         
         if(Robot.isReal()){;
             elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
-            placer = new PlacerSubsystem(new PlacerIOTalonFX());
+            placer = new PlacerSubsystem(new PlacerIOSRX());
         }
         else {
             elevator = new ElevatorSubsystem(new ElevatorIOSim());
@@ -92,14 +92,15 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y. 
         // Note that each routine should be run exactly once in a single log.
-        rightJoystick.getTrigger().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        rightJoystick.getTrigger().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        
         // rightJoystick.getTrigger().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // rightJoystick.getTrigger().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse)); stupid lets do this later
 
         // reset the field-centric heading on left bumper press 
         operatorController.getLeftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())); 
-
+        operatorController.getX().whileTrue(elevator.setVoltage(5));
+        operatorController.getY().whileTrue(elevator.setVoltage(-5));
+        operatorController.getB().whileTrue(elevator.setVoltage(0));
         // operatorController.getX().onTrue(climber.upPosition());
         // operatorController.getY().onTrue(climber.downPosition());
 

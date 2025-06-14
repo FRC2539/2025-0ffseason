@@ -13,5 +13,5 @@ public class PlacerConstants {
     public static final double upvoltage = 2;
 
     public static final int sensorChannel = 0;
-    public static final int secondSensorChannel = 0;
+    public static final int secondSensorChannel = 2;
 }

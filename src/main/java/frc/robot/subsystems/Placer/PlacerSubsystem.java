@@ -19,8 +19,6 @@ public class PlacerSubsystem extends SubsystemBase{
     public final Trigger HAS_PIECE = new Trigger(this::hasPiece);
     public final Trigger PIECE_SEATED = new Trigger(this::isPieceSeated);
 
-    public boolean DOUBLESENSORMODE = true;
-
     LoggedNetworkNumber placerVoltage =
         new LoggedNetworkNumber("Placer Motor Voltage", 0);
 
@@ -29,27 +27,13 @@ public class PlacerSubsystem extends SubsystemBase{
         setDefaultCommand(setVoltage(0));
     }
 
-    @AutoLogOutput
-    public boolean usingDoubleSensorMode(){
-        return DOUBLESENSORMODE;
-    }
-
     public Command ejectReverse(double voltage){
         return setVoltage(-voltage);
     }
 
-
     public void periodic(){
         placerIO.updateInputs(placerInputs);
         Logger.processInputs("RealOutputs/Placer", placerInputs);
-    }
-
-    public Command placerTuneable(){
-        return run(
-            () -> {
-                double voltage = placerVoltage.get();
-                placerIO.setVoltage(voltage);
-            });
     }
 
     public Command intake(double voltage){
@@ -68,12 +52,7 @@ public class PlacerSubsystem extends SubsystemBase{
         return setVoltage(1).until(() -> placerInputs.secondSensor);
     }
 
-    public Command intakeUntilPieceContained(){
-        return Commands.either(
-            intakeUntilPieceSet(), intakeUntilPieceOneSensorMode(), () -> this.DOUBLESENSORMODE ); 
-    }
-
-    public Command placePiece(){
+    public Command placePiece() {
         return setVoltage(PlacerConstants.placeVoltage)
         .until((HAS_PIECE.negate()).and(PIECE_SEATED.negate()))
         .andThen(Commands.waitSeconds(0.3));
@@ -84,13 +63,14 @@ public class PlacerSubsystem extends SubsystemBase{
             placerIO.setVoltage(voltage);
         }, this);
     }
-
+    @AutoLogOutput
     public boolean isPieceSeated(){
-        return placerInputs.firstSensor;
+        return placerInputs.secondSensor;
     }
 
+    @AutoLogOutput
     public boolean hasPiece(){
-        return placerInputs.secondSensor;
+        return placerInputs.firstSensor;
     }
 
     public boolean intaking(){

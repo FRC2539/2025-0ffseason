@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface PlacerIO {
 
-     @AutoLog
+    @AutoLog
     public class PlacerIOInputs {
         public double speed = 0;
         public double voltage = 0;
