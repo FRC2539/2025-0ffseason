@@ -1,9 +1,8 @@
-package frc.robot.constants;
+package frc.robot.subsystems.elevator;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.signals.GravityTypeValue;
 
 public class ElevatorConstants {
 
@@ -25,16 +24,12 @@ public class ElevatorConstants {
                     .withMotionMagicJerk(0);
 
     //Set correct IDs!
-    public static final int elevatorLeaderId = 0;
-    public static final int elevatorFollowerId = 1;
-
-    //Not entirely sure what to fill this out with...
-    public static final String elevatorLeaderCanbus = "fillOut";
-    public static final String elevatorFollowerCanbus = "fillOut";
+    public static final int elevatorLeftMotorId = 10;
+    public static final int elevatorRightMotorId = 9;
 
     public static final CurrentLimitsConfigs currentLimit = new CurrentLimitsConfigs();
 
-    //Set correct limits!
-    public static final double lowerLimit = 1;
+    //TODO: Set correct limits!
+    public static final double lowerLimit = 0;
     public static final double upperLimit = 666;
 }

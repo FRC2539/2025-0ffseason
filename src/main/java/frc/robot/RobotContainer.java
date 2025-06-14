@@ -26,14 +26,13 @@ import frc.robot.constants.AligningConstants;
 import frc.robot.constants.TunerConstants;
 import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Placer.PlacerIO;
 import frc.robot.subsystems.Placer.PlacerIOSim;
 import frc.robot.subsystems.Placer.PlacerIOTalonFX;
 import frc.robot.subsystems.Placer.PlacerSubsystem;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.elevator.ElevatorSubsystem;
+
 
 
 public class RobotContainer {
@@ -55,26 +54,19 @@ public class RobotContainer {
     private final LogitechController operatorController = new LogitechController(2);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    // public final ElevatorSubsystem elevator;
-    // public final PlacerSubsystem placer;
-
-    private DoubleSupplier leftJoystickVelocityX;
-    private DoubleSupplier leftJoystickVelocityY;
-    private DoubleSupplier rightJoystickVelocityTheta;
-
-
-
+    public final ElevatorSubsystem elevator;
+    public final PlacerSubsystem placer;
 
     public RobotContainer() {
         
-        // if(Robot.isReal()){;
-        //     elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
-        //     placer = new PlacerSubsystem(new PlacerIOTalonFX());
-        // }
-        // else {
-        //     elevator = new ElevatorSubsystem(new ElevatorIOSim());
-        //     placer = new PlacerSubsystem(new PlacerIOSim());
-        // }
+        if(Robot.isReal()){;
+            elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
+            placer = new PlacerSubsystem(new PlacerIOTalonFX());
+        }
+        else {
+            elevator = new ElevatorSubsystem(new ElevatorIOSim());
+            placer = new PlacerSubsystem(new PlacerIOSim());
+        }
 
         configureBindings();
 

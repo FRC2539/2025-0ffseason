@@ -8,20 +8,17 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.Follower;
 
-import frc.robot.constants.ElevatorConstants;
-import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 
 public class ElevatorIOTalonFX implements ElevatorIO{
     
-    //Set IDs later
-    private TalonFX elevatorLeader = new TalonFX(0, ElevatorConstants.elevatorLeaderCanbus);
-    private TalonFX elevatorFollower = new TalonFX(1, ElevatorConstants.elevatorFollowerCanbus); 
+    private TalonFX elevatorLeftMotor = new TalonFX(ElevatorConstants.elevatorLeftMotorId); // Leader
+    private TalonFX elevatorRightMotor = new TalonFX(ElevatorConstants.elevatorRightMotorId); // Follower
 
-    private final MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
+    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
     public ElevatorIOTalonFX(){
-        elevatorFollower.setPosition(0);
-
+        elevatorLeftMotor.setPosition(0);
+        elevatorRightMotor.setPosition(0);
         motionMagicVoltage.withSlot(0);
 
         SoftwareLimitSwitchConfigs softwareLimitSwitchConfigs =
@@ -41,26 +38,27 @@ public class ElevatorIOTalonFX implements ElevatorIO{
                         .withCurrentLimits(ElevatorConstants.currentLimit)
                         .withFeedback(feedbackConfigs);
 
-        elevatorLeader.getConfigurator().apply(config);
-        elevatorFollower.getConfigurator().apply(config);
+        elevatorLeftMotor.getConfigurator().apply(config);
+        elevatorRightMotor.getConfigurator().apply(config);
 
-        elevatorFollower.setControl(new Follower(elevatorFollower.getDeviceID(), false));
 
-        elevatorLeader.setNeutralMode(NeutralModeValue.Brake);
-        elevatorFollower.setNeutralMode(NeutralModeValue.Brake);
+        elevatorRightMotor.setControl(new Follower(elevatorLeftMotor.getDeviceID(), true));
+
+        elevatorLeftMotor.setNeutralMode(NeutralModeValue.Brake);
+        elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     public void updateInputs(ElevatorIOInputs inputs) {
 
-        inputs.position = elevatorLeader.getPosition().refresh().getValueAsDouble();
-        inputs.voltage = elevatorLeader.getMotorVoltage().refresh().getValueAsDouble();
-        inputs.speed = elevatorLeader.getVelocity().refresh().getValueAsDouble();
-        inputs.temperature = elevatorLeader.getDeviceTemp().getValueAsDouble();
-        inputs.current = elevatorLeader.getStatorCurrent().getValueAsDouble();
+        inputs.position = elevatorLeftMotor.getPosition().refresh().getValueAsDouble();
+        inputs.voltage = elevatorLeftMotor.getMotorVoltage().refresh().getValueAsDouble();
+        inputs.speed = elevatorLeftMotor.getVelocity().refresh().getValueAsDouble();
+        inputs.temperature = elevatorLeftMotor.getDeviceTemp().getValueAsDouble();
+        inputs.current = elevatorLeftMotor.getStatorCurrent().getValueAsDouble();
     }
 
     public void setVoltage(double voltage) {
-        elevatorLeader.setVoltage(voltage);
+        elevatorLeftMotor.setVoltage(voltage);
     }
 
     public void setPosition(double position) {
@@ -72,11 +70,11 @@ public class ElevatorIOTalonFX implements ElevatorIO{
             position = ElevatorConstants.lowerLimit;
         }
         
-        elevatorLeader.setControl(motionMagicVoltage);
+        elevatorLeftMotor.setControl(motionMagicVoltage);
     }
 
     public void resetPosition(){
-        elevatorLeader.setPosition(0);
+        elevatorLeftMotor.setPosition(0);
     }
 
 }
