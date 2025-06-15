@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Placer;
+package frc.robot.subsystems.placer;
 
 import org.littletonrobotics.junction.AutoLog;
 
@@ -6,10 +6,7 @@ public interface PlacerIO {
 
     @AutoLog
     public class PlacerIOInputs {
-        public double speed = 0;
         public double voltage = 0;
-        public double temperature = 0;
-        public double current = 0;
 
         public boolean firstSensor = false;
         public boolean secondSensor = false;

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Placer;
+package frc.robot.subsystems.placer;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.PlacerConstants;
+import frc.robot.subsystems.Placer.PlacerIOInputsAutoLogged;
 
 public class PlacerSubsystem extends SubsystemBase{
 
@@ -22,21 +23,21 @@ public class PlacerSubsystem extends SubsystemBase{
     LoggedNetworkNumber placerVoltage =
         new LoggedNetworkNumber("Placer Motor Voltage", 0);
 
-    public PlacerSubsystem(PlacerIO placerIO){
+    public PlacerSubsystem(PlacerIO placerIO) {
         this.placerIO = placerIO;
         setDefaultCommand(setVoltage(0));
     }
 
-    public Command ejectReverse(double voltage){
+    public Command ejectReverse(double voltage) {
         return setVoltage(-voltage);
     }
 
-    public void periodic(){
+    public void periodic() {
         placerIO.updateInputs(placerInputs);
         Logger.processInputs("RealOutputs/Placer", placerInputs);
     }
 
-    public Command intake(double voltage){
+    public Command intake(double voltage) {
         return setVoltage(voltage);
     }
 
@@ -48,32 +49,29 @@ public class PlacerSubsystem extends SubsystemBase{
                 .until(() -> placerInputs.secondSensor));
     }
 
-    public Command intakeUntilPieceOneSensorMode(){
-        return setVoltage(1).until(() -> placerInputs.secondSensor);
-    }
-
     public Command placePiece() {
         return setVoltage(PlacerConstants.placeVoltage)
         .until((HAS_PIECE.negate()).and(PIECE_SEATED.negate()))
         .andThen(Commands.waitSeconds(0.3));
     }
 
-    public Command setVoltage(double voltage){
+    public Command setVoltage(double voltage) {
         return Commands.run(() -> {
             placerIO.setVoltage(voltage);
         }, this);
     }
+
     @AutoLogOutput
-    public boolean isPieceSeated(){
-        return placerInputs.secondSensor;
+    public boolean isPieceSeated() {
+        return !placerInputs.secondSensor; // inverted
     }
 
     @AutoLogOutput
-    public boolean hasPiece(){
-        return placerInputs.firstSensor;
+    public boolean hasPiece() {
+        return !placerInputs.firstSensor; // inverted
     }
 
-    public boolean intaking(){
+    public boolean intaking() {
         return placerInputs.voltage > 3;
     }
     

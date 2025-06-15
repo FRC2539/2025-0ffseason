@@ -1,10 +1,15 @@
-package frc.robot.subsystems.Placer;
+package frc.robot.subsystems.placer;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.fasterxml.jackson.databind.type.PlaceholderForType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -14,37 +19,30 @@ public class PlacerIOSRX implements PlacerIO{
 
     private double voltage;
 
-    // WPI_TalonSRX x =  (PlacerConstants.placerMotorID, PlacerConstants.placerMotorCanbus);
+    TalonSRX placerMotor = new TalonSRX(PlacerConstants.placerMotorID);
 
-    @AutoLogOutput
     private DigitalInput pieceSeatedSensor = new DigitalInput(PlacerConstants.secondSensorChannel);
-    @AutoLogOutput
     private DigitalInput hasPieceSensor = new DigitalInput(PlacerConstants.sensorChannel);
 
-    public PlacerIOSRX(){
+    public PlacerIOSRX() {
         
 
         Shuffleboard.getTab("debug")
                 .addBoolean("first sensor value", () -> hasPieceSensor.get());
         
-        // placerMotor.setNeutralMode(NeutralModeValue.Brake);
-        // placerMotor.getConfigurator().apply(new TalonFXConfiguration()); //Default
+        placerMotor.configAllSettings(new TalonSRXConfiguration());
+        placerMotor.setNeutralMode(NeutralMode.Brake);
+
     }
 
-    public void updateInputs(PlacerIOInputs inputs){
-        inputs.voltage = 0; //placerMotor.getMotorVoltage().getValueAsDouble(); 
-        inputs.current = 0; //placerMotor.getSupplyCurrent().getValueAsDouble(); 
-        inputs.temperature =  0; // placerMotor.getDeviceTemp().getValueAsDouble();
+    public void updateInputs(PlacerIOInputs inputs) {
+        inputs.voltage = placerMotor.getMotorOutputVoltage();
 
-        //placerMotor.setVoltage(voltage);
+
+        placerMotor.set(TalonSRXControlMode.PercentOutput, voltage / 12);
 
         inputs.firstSensor = hasPieceSensor.get();
         inputs.secondSensor = pieceSeatedSensor.get();
-    }
-
-    @AutoLogOutput
-    public boolean getSensorValue(){
-        return hasPieceSensor.get();
     }
 
     public void setVoltage(double voltage) {

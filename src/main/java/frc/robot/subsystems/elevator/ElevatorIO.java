@@ -15,7 +15,6 @@ public interface ElevatorIO {
         public double current = 0;
     }
     
-
     public void setPosition(double pos);
 
     public void setVoltage(double vol);

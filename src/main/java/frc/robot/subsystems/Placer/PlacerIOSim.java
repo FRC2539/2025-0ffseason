@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Placer;
+package frc.robot.subsystems.placer;
 
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
@@ -9,7 +9,6 @@ import frc.robot.constants.PlacerConstants;
 public class PlacerIOSim implements PlacerIO{
     
     private double voltage;
-    private double speed;
 
     private LoggedNetworkBoolean placerGPSensorInitial =
             new LoggedNetworkBoolean("Gripper Initial Sensor Sim", true);
@@ -20,7 +19,6 @@ public class PlacerIOSim implements PlacerIO{
 
     public void updateInputs(PlacerIOInputs inputs) {
         inputs.voltage = voltage;
-        inputs.speed = speed;
         inputs.firstSensor = placerGPSensorInitial.get(); 
         inputs.secondSensor = placerGPSensorSecond.get();
     }

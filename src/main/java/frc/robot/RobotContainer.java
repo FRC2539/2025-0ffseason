@@ -6,32 +6,21 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.Set;
-import java.util.function.DoubleSupplier;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.lib.controller.LogitechController;
 import frc.lib.controller.ThrustmasterJoystick;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.commands.AlignAndDriveToReef;
-import frc.robot.commands.AlignToReef;
-import frc.robot.constants.AligningConstants;
 import frc.robot.constants.TunerConstants;
-import frc.robot.constants.VisionConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Placer.PlacerIOSim;
-import frc.robot.subsystems.Placer.PlacerIOSRX;
-import frc.robot.subsystems.Placer.PlacerSubsystem;
+import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.placer.PlacerIOSRX;
+import frc.robot.subsystems.placer.PlacerIOSim;
+import frc.robot.subsystems.placer.PlacerSubsystem;
 
 
 
@@ -78,9 +67,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> 
-                drive.withVelocityX(-Math.pow(leftJoystick.getXAxis().getRaw(),3) * MaxSpeed * 0.3) // Drive forward with negative Y (forward) POSSIBLY READD - TO FIX ANY INVERT ISSUES
-                    .withVelocityY(Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed * 0.3) // Drive left with negative X (left)
-                    .withRotationalRate(Math.pow(-rightJoystick.getXAxis().getRaw(), 3) * MaxAngularRate * 0.3).withDeadband(0.02) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-Math.pow(leftJoystick.getXAxis().getRaw(),3) * MaxSpeed) // Drive forward with negative Y (forward) POSSIBLY READD - TO FIX ANY INVERT ISSUES
+                    .withVelocityY(Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(Math.pow(-rightJoystick.getXAxis().getRaw(), 3) * MaxAngularRate).withDeadband(0.02) // Drive counterclockwise with negative X (left)
             )
         );
 

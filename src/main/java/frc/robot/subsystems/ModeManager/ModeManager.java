@@ -1,22 +1,19 @@
-package frc.robot.subsystems.ModeManager;
-
-import org.littletonrobotics.junction.AutoLogOutput;
+package frc.robot.subsystems.modeManager;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Placer.PlacerSubsystem;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.placer.PlacerSubsystem;
 
 public class ModeManager extends SubsystemBase {
 
   private ElevatorSubsystem elevator;
 
-  public ModeManager(ElevatorSubsystem elevator, PlacerSubsystem placer){
+  public ModeManager(ElevatorSubsystem elevator, PlacerSubsystem placer) {
     this.elevator = elevator;
   }
 
-  public static enum Position{
+  public static enum Position {
     L1(0),
     L2(0),
     L3(0),
@@ -26,8 +23,7 @@ public class ModeManager extends SubsystemBase {
     Algae3(0),
 
     Home(0),
-    Start(0),
-    Climb(0);
+    Start(0);
 
     private double elevatorHeight;
         
@@ -35,13 +31,12 @@ public class ModeManager extends SubsystemBase {
       this.elevatorHeight = elevatorHeight;
     }
 
-    
-    public double elevatorHeight(){
+    public double elevatorHeight() {
       return elevatorHeight;
     }
   }
 
-  public Command moveElevator(Position position){
+  public Command moveElevator(Position position) {
     return runOnce(
       () -> elevator.setPosition(position.elevatorHeight)
     );

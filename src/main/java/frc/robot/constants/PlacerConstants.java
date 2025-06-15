@@ -3,10 +3,9 @@ package frc.robot.constants;
 public class PlacerConstants {
     
     public static final int placerMotorID = 3; //Set to correct ID
-    public static final String placerMotorCanbus = "StillNeedsToBeSet";
 
     //Set to preffered voltages
-    public static final double handoffVoltage = 2;
+    public static final double handoffVoltage = 6;
     public static final double slowHandoffVoltage = 2;
     public static final double placeVoltage = 2;
     public static final double downvoltage = 2;
