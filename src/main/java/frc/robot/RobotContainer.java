@@ -18,6 +18,8 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.modeManager.ModeManager;
+import frc.robot.subsystems.modeManager.ModeManager.Position;
 import frc.robot.subsystems.placer.PlacerIOSRX;
 import frc.robot.subsystems.placer.PlacerIOSim;
 import frc.robot.subsystems.placer.PlacerSubsystem;
@@ -46,15 +48,19 @@ public class RobotContainer {
     public final ElevatorSubsystem elevator;
     public final PlacerSubsystem placer;
 
+    public final ModeManager modeManager;
+
     public RobotContainer() {
         
         if(Robot.isReal()){;
             elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
             placer = new PlacerSubsystem(new PlacerIOSRX());
+            modeManager = new ModeManager(elevator, placer);
         }
         else {
             elevator = new ElevatorSubsystem(new ElevatorIOSim());
             placer = new PlacerSubsystem(new PlacerIOSim());
+            modeManager = null;
         }
 
         configureBindings();
@@ -87,10 +93,12 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press 
         operatorController.getLeftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())); 
-        operatorController.getX().whileTrue(elevator.setVoltage(5));
-        operatorController.getY().whileTrue(elevator.setVoltage(-5));
-        operatorController.getB().whileTrue(elevator.setVoltage(0));
-        // operatorController.getX().onTrue(climber.upPosition());
+        operatorController.getX().whileTrue(placer.intake(12));
+        operatorController.getY().onTrue(elevator.setPosition(-13.49
+        ));
+        operatorController.getB().whileTrue(placer.intakeUntilPieceSet());
+        // operatorContro
+       // ller.getX().onTrue(climber.upPosition());
         // operatorController.getY().onTrue(climber.downPosition());
 
         drivetrain.registerTelemetry(logger::telemeterize);

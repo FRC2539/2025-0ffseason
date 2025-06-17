@@ -19,7 +19,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         setDefaultCommand(setVoltage(0));
     }
 
-    
+    @Override
     public void periodic() {
 
         pivotIO.updateInputs(elevatorInputs);

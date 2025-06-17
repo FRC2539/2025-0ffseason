@@ -41,8 +41,8 @@ public class PlacerIOSRX implements PlacerIO{
 
         placerMotor.set(TalonSRXControlMode.PercentOutput, voltage / 12);
 
-        inputs.firstSensor = hasPieceSensor.get();
-        inputs.secondSensor = pieceSeatedSensor.get();
+        inputs.firstSensor = !hasPieceSensor.get();
+        inputs.secondSensor = !pieceSeatedSensor.get();
     }
 
     public void setVoltage(double voltage) {

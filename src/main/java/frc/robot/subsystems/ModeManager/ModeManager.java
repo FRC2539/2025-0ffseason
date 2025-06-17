@@ -1,6 +1,7 @@
 package frc.robot.subsystems.modeManager;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.placer.PlacerSubsystem;
@@ -17,7 +18,7 @@ public class ModeManager extends SubsystemBase {
     L1(0),
     L2(0),
     L3(0),
-    L4(0),
+    L4(7.423),
 
     Algae2(0),
     Algae3(0),
@@ -37,8 +38,8 @@ public class ModeManager extends SubsystemBase {
   }
 
   public Command moveElevator(Position position) {
-    return runOnce(
-      () -> elevator.setPosition(position.elevatorHeight)
+    return Commands.runOnce(
+      () -> elevator.setPosition(position.elevatorHeight), this.elevator
     );
   }
 }

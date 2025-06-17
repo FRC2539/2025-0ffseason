@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.PlacerConstants;
-import frc.robot.subsystems.Placer.PlacerIOInputsAutoLogged;
+import frc.robot.subsystems.placer.PlacerIOInputsAutoLogged;
 
 public class PlacerSubsystem extends SubsystemBase{
 
@@ -31,7 +31,8 @@ public class PlacerSubsystem extends SubsystemBase{
     public Command ejectReverse(double voltage) {
         return setVoltage(-voltage);
     }
-
+    
+    @Override
     public void periodic() {
         placerIO.updateInputs(placerInputs);
         Logger.processInputs("RealOutputs/Placer", placerInputs);
@@ -43,10 +44,9 @@ public class PlacerSubsystem extends SubsystemBase{
 
     public Command intakeUntilPieceSet(){
         return setVoltage(PlacerConstants.handoffVoltage)
-        .until(() -> placerInputs.firstSensor)
-        .andThen(
-            setVoltage(PlacerConstants.slowHandoffVoltage)
-                .until(() -> placerInputs.secondSensor));
+            .until(() -> placerInputs.firstSensor)
+            .andThen(Commands.sequence(Commands.waitSeconds(0.15), setVoltage(PlacerConstants.slowHandoffVoltage)
+            .until(() -> placerInputs.secondSensor)));
     }
 
     public Command placePiece() {
@@ -63,12 +63,12 @@ public class PlacerSubsystem extends SubsystemBase{
 
     @AutoLogOutput
     public boolean isPieceSeated() {
-        return !placerInputs.secondSensor; // inverted
+        return placerInputs.secondSensor; // inverted
     }
 
     @AutoLogOutput
     public boolean hasPiece() {
-        return !placerInputs.firstSensor; // inverted
+        return placerInputs.firstSensor; // inverted
     }
 
     public boolean intaking() {

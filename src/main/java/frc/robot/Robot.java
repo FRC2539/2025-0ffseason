@@ -75,7 +75,7 @@ Logger.start(); // Start logging! No more data receivers, replay sources, or met
 
   @Override
   public void teleopPeriodic() {
-    System.out.println(m_robotContainer.placer.isPieceSeated());
+    //System.out.println(m_robotContainer.placer.isPieceSeated());
   }
 
   @Override
