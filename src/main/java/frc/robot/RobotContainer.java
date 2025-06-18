@@ -94,8 +94,9 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press 
         operatorController.getLeftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())); 
         operatorController.getX().whileTrue(placer.intake(12));
-        operatorController.getY().onTrue(elevator.setPosition(-13.49
-        ));
+        operatorController.getY().onTrue(elevator.setPosition(22.4));
+        operatorController.getA().onTrue(elevator.setPosition(.5));
+        //operatorController.getY().onTrue(elevator.setVoltage(1.5).andThen(elevator.setPosition(1.5)));
         operatorController.getB().whileTrue(placer.intakeUntilPieceSet());
         // operatorContro
        // ller.getX().onTrue(climber.upPosition());

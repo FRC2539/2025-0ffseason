@@ -1,15 +1,8 @@
 package frc.robot.subsystems.elevator;
-
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import edu.wpi.first.math.controller.PIDController;
-
-
 import com.ctre.phoenix6.controls.Follower;
 
 
@@ -17,7 +10,6 @@ public class ElevatorIOTalonFX implements ElevatorIO{
     
     private TalonFX elevatorLeftMotor = new TalonFX(ElevatorConstants.elevatorLeftMotorId); // Leader
     private TalonFX elevatorRightMotor = new TalonFX(ElevatorConstants.elevatorRightMotorId); // Follower
-
 
     double target = 0;
     final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
@@ -27,7 +19,10 @@ public class ElevatorIOTalonFX implements ElevatorIO{
         elevatorRightMotor.setPosition(0);
         
         elevatorRightMotor.setControl(new Follower(elevatorLeftMotor.getDeviceID(), true));
-
+        TalonFXConfiguration rightMotorConfigs = new TalonFXConfiguration();
+        //leftMotorConfigs.MotorOutput.OpenLoopRamp = 0.2;
+        rightMotorConfigs.MotorOutput.PeakForwardDutyCycle = 1.0;
+        rightMotorConfigs.MotorOutput.PeakReverseDutyCycle = -1.0;
 
         var talonFXConfigs = new TalonFXConfiguration();
 
@@ -53,6 +48,7 @@ public class ElevatorIOTalonFX implements ElevatorIO{
 
         elevatorLeftMotor.setNeutralMode(NeutralModeValue.Brake);
         elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
+        elevatorRightMotor.getConfigurator().apply(rightMotorConfigs);
         
         
     }
@@ -65,17 +61,18 @@ public class ElevatorIOTalonFX implements ElevatorIO{
         inputs.temperature = elevatorLeftMotor.getDeviceTemp().getValueAsDouble();
         inputs.current = elevatorLeftMotor.getStatorCurrent().getValueAsDouble();
 
-
         MotionMagicVoltage goal = m_request.withPosition(target).withSlot(0);
         elevatorLeftMotor.setControl(goal);
-        elevatorRightMotor.setControl(goal);
-
-        System.out.println(target);
+        //elevatorRightMotor.setControl(goal);
         
+        //System.out.println("target: "+target);
+        //System.out.println("left: "+elevatorLeftMotor.getPosition().refresh().getValueAsDouble());
+        //System.out.println("right: "+elevatorRightMotor.getPosition().refresh().getValueAsDouble());
     }
 
     public void setVoltage(double voltage) {
-        elevatorLeftMotor.setVoltage(voltage);
+        //elevatorLeftMotor.setVoltage(voltage);
+        //elevatorRightMotor.setVoltage(-voltage);
     }
 
     public void setPosition(double position) {
@@ -86,6 +83,7 @@ public class ElevatorIOTalonFX implements ElevatorIO{
         // if (position < ElevatorConstants.lowerLimit) { // set to ElevatorConstants lower limit
         //     position = ElevatorConstants.lowerLimit;
         // }
+        
         this.target = position;
     }
 
