@@ -57,7 +57,7 @@ public class RobotContainer {
 
     public final ModeManager modeManager;
 
-    public final VisionSubsystem camera; 
+    //public final VisionSubsystem camera; 
 
     public RobotContainer() {
         
@@ -65,15 +65,15 @@ public class RobotContainer {
             elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
             placer = new PlacerSubsystem(new PlacerIOSRX());
             modeManager = new ModeManager(elevator, placer);
-            camera = new VisionSubsystem((Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) -> {
-                drivetrain.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-            }, new VisionIOLimelight("limelight", () -> drivetrain.getPigeon2().getRotation2d()));
+            //camera = new VisionSubsystem((Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) -> {
+        //         drivetrain.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+        //     }, new VisionIOLimelight("limelight", () -> drivetrain.getPigeon2().getRotation2d()));
         }
         else {
             elevator = new ElevatorSubsystem(new ElevatorIOSim());
             placer = new PlacerSubsystem(new PlacerIOSim());
             modeManager = null;
-            camera = null;
+            //camera = null;
         }
 
         configureBindings();
