@@ -55,6 +55,7 @@ public class RobotContainer {
     public final ElevatorSubsystem elevator;
     public final PlacerSubsystem placer;
 
+    //public final Auto auto;
     public final ModeManager modeManager;
 
     //public final VisionSubsystem camera; 
@@ -75,6 +76,8 @@ public class RobotContainer {
             modeManager = null;
             //camera = null;
         }
+
+        /auto = new Auto(drivetrain);
 
         configureBindings();
 
