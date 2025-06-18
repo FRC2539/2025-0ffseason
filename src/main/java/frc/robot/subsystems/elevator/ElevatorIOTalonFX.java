@@ -35,17 +35,12 @@ public class ElevatorIOTalonFX implements ElevatorIO{
         slot0Configs.kI = 0; // no output for integrated error
         slot0Configs.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
         
-
-
-        
         talonFXConfigs.MotionMagic.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
         talonFXConfigs.MotionMagic.MotionMagicAcceleration = 160; // Target acceleration of 160 rps/s (0.5 seconds)
         talonFXConfigs.MotionMagic.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
         elevatorLeftMotor.getConfigurator().apply(talonFXConfigs);
         elevatorRightMotor.getConfigurator().apply(talonFXConfigs);
-
-
         elevatorLeftMotor.setNeutralMode(NeutralModeValue.Brake);
         elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
         elevatorRightMotor.getConfigurator().apply(rightMotorConfigs);
@@ -76,15 +71,17 @@ public class ElevatorIOTalonFX implements ElevatorIO{
     }
 
     public void setPosition(double position) {
-        // if (position > ElevatorConstants.upperLimit) { // set to ElevatorConstants upper limit
-        //     position = ElevatorConstants.upperLimit;
-        // }
 
         // if (position < ElevatorConstants.lowerLimit) { // set to ElevatorConstants lower limit
         //     position = ElevatorConstants.lowerLimit;
         // }
         
         this.target = position;
+
+        MotionMagicVoltage goal = m_request.withPosition(position).withEnableFOC(false).withSlot(0);
+
+        elevatorLeftMotor.setControl(goal);
+
     }
 
     public void resetPosition(){
