@@ -77,7 +77,7 @@ public class RobotContainer {
             //camera = null;
         }
 
-        /auto = new Auto(drivetrain);
+        //auto = new Auto(drivetrain);
 
         configureBindings();
 
