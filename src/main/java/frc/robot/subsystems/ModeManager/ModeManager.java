@@ -15,16 +15,13 @@ public class ModeManager extends SubsystemBase {
   }
 
   public static enum Position {
-    L1(0),
-    L2(0),
-    L3(0),
+    L1(2),
+    L2(3),
+    L3(4),
     L4(7.423),
 
-    Algae2(0),
-    Algae3(0),
-
-    Home(0),
-    Start(0);
+    Home(0);
+  
 
     private double elevatorHeight;
         
@@ -38,8 +35,6 @@ public class ModeManager extends SubsystemBase {
   }
 
   public Command moveElevator(Position position) {
-    return Commands.runOnce(
-      () -> elevator.setPosition(position.elevatorHeight), this.elevator
-    );
+    return elevator.setPosition(position.elevatorHeight());
   }
 }

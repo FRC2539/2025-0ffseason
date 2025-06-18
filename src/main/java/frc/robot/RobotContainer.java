@@ -106,9 +106,9 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press 
         operatorController.getLeftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())); 
-        operatorController.getX().whileTrue(placer.intake(12));
-        operatorController.getY().onTrue(elevator.setPosition(22.4));
-        operatorController.getA().onTrue(elevator.setPosition(.5));
+        // operatorController.getX().whileTrue(placer.intake(12));
+        // operatorController.getY().onTrue(elevator.setPosition(22.4));
+        // operatorController.getA().onTrue(elevator.setPosition(.5));
         //operatorController.getY().onTrue(elevator.setVoltage(1.5).andThen(elevator.setPosition(1.5)));
 
         operatorController.getB().whileTrue(placer.intakeUntilPieceSet());
@@ -117,6 +117,21 @@ public class RobotContainer {
         // operatorController.getY().onTrue(climber.downPosition());
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+
+
+        operatorController.getY().onTrue(elevator.setPosition(2));
+        operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
+        operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
+        operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
+
+        operatorController.getDPadLeft().onTrue(Commands.runOnce(() -> placer.setVoltage(0), placer));
+        operatorController.getDPadRight().whileTrue(placer.intakeUntilPieceSet());
+        operatorController.getA().onTrue(Commands.sequence(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
+
+
+
+
 
         // rightJoystick.getTrigger().onTrue(placer.runOnce(() -> placer.placePiece()));
         // operatorController.getDPadDown().whileTrue(placer.run(() -> placer.intake(2)));
