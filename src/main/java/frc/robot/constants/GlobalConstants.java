@@ -16,7 +16,7 @@ public class GlobalConstants {
     private static final SwerveModuleConstants EXAMPLE_MODULE = TunerConstants.FrontLeft;
 
     public static final LinearVelocity MAX_TRANSLATIONAL_SPEED = TunerConstants.kSpeedAt12Volts;
-    public static final AngularVelocity MAX_ROTATIONAL_SPEED = RotationsPerSecond.of(1);
+    //public static final AngularVelocity MAX_ROTATIONAL_SPEED = RotationsPerSecond.of(1);
 
     public static final Mass ROBOT_MASS = Pounds.of(150);
     public static final MomentOfInertia ROBOT_MOI = KilogramSquareMeters.of(11.61);

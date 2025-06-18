@@ -10,7 +10,12 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.lib.controller.LogitechController;
 import frc.lib.controller.ThrustmasterJoystick;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N13;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.TunerConstants;
@@ -23,6 +28,8 @@ import frc.robot.subsystems.modeManager.ModeManager.Position;
 import frc.robot.subsystems.placer.PlacerIOSRX;
 import frc.robot.subsystems.placer.PlacerIOSim;
 import frc.robot.subsystems.placer.PlacerSubsystem;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionSubsystem;
 
 
 
@@ -50,17 +57,23 @@ public class RobotContainer {
 
     public final ModeManager modeManager;
 
+    public final VisionSubsystem camera; 
+
     public RobotContainer() {
         
         if(Robot.isReal()){;
             elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
             placer = new PlacerSubsystem(new PlacerIOSRX());
             modeManager = new ModeManager(elevator, placer);
+            camera = new VisionSubsystem((Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) -> {
+                drivetrain.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+            }, new VisionIOLimelight("limelight", () -> drivetrain.getPigeon2().getRotation2d()));
         }
         else {
             elevator = new ElevatorSubsystem(new ElevatorIOSim());
             placer = new PlacerSubsystem(new PlacerIOSim());
             modeManager = null;
+            camera = null;
         }
 
         configureBindings();
@@ -94,8 +107,7 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press 
         operatorController.getLeftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())); 
         operatorController.getX().whileTrue(placer.intake(12));
-        operatorController.getY().onTrue(elevator.setPosition(-13.49
-        ));
+        operatorController.getY().onTrue(elevator.setPosition(-13.49));
         operatorController.getB().whileTrue(placer.intakeUntilPieceSet());
         // operatorContro
        // ller.getX().onTrue(climber.upPosition());
