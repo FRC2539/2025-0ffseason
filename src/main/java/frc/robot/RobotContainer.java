@@ -123,7 +123,7 @@ public class RobotContainer {
 
 
 
-        operatorController.getY().onTrue(elevator.setPosition(2));
+        operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
         operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
         operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
         operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
@@ -131,6 +131,7 @@ public class RobotContainer {
         operatorController.getDPadLeft().onTrue(Commands.runOnce(() -> placer.setVoltage(0), placer));
         operatorController.getDPadRight().whileTrue(placer.intakeUntilPieceSet());
         operatorController.getA().onTrue(Commands.sequence(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
+        operatorController.getRightTrigger().onTrue(placer.placePiece());
 
 
 
