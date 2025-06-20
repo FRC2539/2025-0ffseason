@@ -18,6 +18,7 @@ import edu.wpi.first.math.numbers.N13;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.AlignToReefVision;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
@@ -55,7 +56,7 @@ public class RobotContainer {
     public final ElevatorSubsystem elevator;
     public final PlacerSubsystem placer;
 
-    //public final Auto auto;
+    public final Auto auto;
     public final ModeManager modeManager;
 
     //public final VisionSubsystem camera; 
@@ -77,7 +78,7 @@ public class RobotContainer {
             //camera = null;
         }
 
-        //auto = new Auto(drivetrain);
+        auto = new Auto(drivetrain);
 
         configureBindings();
 
@@ -89,8 +90,8 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> 
-                drive.withVelocityX(-Math.pow(leftJoystick.getXAxis().getRaw(),3) * MaxSpeed) // Drive forward with negative Y (forward) POSSIBLY READD - TO FIX ANY INVERT ISSUES
-                    .withVelocityY(Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed) // Drive left with negative X (left)
+                drive.withVelocityY(-Math.pow(leftJoystick.getXAxis().getRaw(),3) * MaxSpeed) // Drive forward with negative Y (forward) POSSIBLY READD - TO FIX ANY INVERT ISSUES
+                    .withVelocityX(-Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(Math.pow(-rightJoystick.getXAxis().getRaw(), 3) * MaxAngularRate).withDeadband(0.02) // Drive counterclockwise with negative X (left)
             )
         );
@@ -108,13 +109,16 @@ public class RobotContainer {
         // rightJoystick.getTrigger().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse)); stupid lets do this later
 
         // reset the field-centric heading on left bumper press 
-        operatorController.getLeftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric())); 
+        //operatorController.getLeftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.setOperatorPerspectiveForward(drivetrain.getOperatorForwardDirection()))); 
+        operatorController.getRightBumper().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(0,0, drivetrain.getOperatorForwardDirection()))));
         // operatorController.getX().whileTrue(placer.intake(12));
         // operatorController.getY().onTrue(elevator.setPosition(22.4));
         // operatorController.getA().onTrue(elevator.setPosition(.5));
         //operatorController.getY().onTrue(elevator.setVoltage(1.5).andThen(elevator.setPosition(1.5)));
 
-        operatorController.getB().whileTrue(placer.intakeUntilPieceSet());
+        operatorController.getRightTrigger().onTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
+        operatorController.getLeftTrigger().onTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
+        //operatorController.getB().whileTrue(placer.intakeUntilPieceSet());
         // operatorContro
        // ller.getX().onTrue(climber.upPosition());
         // operatorController.getY().onTrue(climber.downPosition());
@@ -125,13 +129,13 @@ public class RobotContainer {
 
         operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
         operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
-        operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
+        //operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
         operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
 
         operatorController.getDPadLeft().onTrue(Commands.runOnce(() -> placer.setVoltage(0), placer));
         operatorController.getDPadRight().whileTrue(placer.intakeUntilPieceSet());
         operatorController.getA().onTrue(Commands.sequence(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
-        operatorController.getRightTrigger().onTrue(placer.placePiece());
+        operatorController.getLeftBumper().onTrue(placer.placePiece());
 
 
 
@@ -144,7 +148,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return auto.getAuto();
     }
 
     // public Command alignToReef(int tag, double offset, Rotation2d rotOffset) {

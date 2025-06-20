@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
-  private final RobotContainer m_robotContainer;
+  public final RobotContainer m_robotContainer;
 
   public Robot() {
     Logger.recordMetadata("ProjectName", "2025-offseason"); // Set a metadata value
