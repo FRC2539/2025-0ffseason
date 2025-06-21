@@ -138,7 +138,9 @@ public class RobotContainer {
         operatorController.getDPadLeft().onTrue(Commands.runOnce(() -> placer.setVoltage(0), placer));
         operatorController.getDPadRight().whileTrue(placer.intakeUntilPieceSet());
         operatorController.getA().onTrue(Commands.sequence(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
-        operatorController.getLeftBumper().onTrue(placer.placePiece());
+
+    
+        rightJoystick.getTrigger().onTrue(placer.placePiece());
 
 
 
