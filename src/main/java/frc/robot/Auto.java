@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
+import frc.robot.subsystems.modeManager.ModeManager.Position;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -26,6 +27,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class Auto {
     private final LoggedDashboardChooser<Command> autoChooser;
     private RobotConfig config; // PathPlanner robot configuration
+    private RobotContainer container;
 
 
 
@@ -34,15 +36,17 @@ public class Auto {
     // *NEW
     private final Field2d m_trajectoryField = new Field2d();
 
-    public Auto(CommandSwerveDrivetrain drivetrain) {
+    public Auto(CommandSwerveDrivetrain drivetrain, RobotContainer container) {
         setUpPathPlanner(drivetrain);
+    
         autoChooser = new LoggedDashboardChooser<>("Auto Routine", AutoBuilder.buildAutoChooser());
         SmartDashboard.putData("Auto Path", m_trajectoryField);
+        this.container = container;
     }
 
     public Command getAuto() {
         if (AutoBuilder.isConfigured()) {
-            return autoChooser.get();
+            return autoChooser.get().andThen(container.modeManager.moveElevator(Position.L4).withTimeout(2)).andThen(Commands.sequence(Commands.waitSeconds(3), container.placer.placePiece()));
         } else {
             return Commands.none();
         }

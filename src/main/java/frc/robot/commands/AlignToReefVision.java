@@ -18,26 +18,29 @@ public class AlignToReefVision extends Command {
 
     private final SwerveRequest.ApplyRobotSpeeds applyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
-    double targetTx = -21.85;
+    double targetTx = -19.8; //-21.85
 
     private int id;
     private PIDController thetaController = new PIDController(10, 0, 0);
     private PIDController yController = new PIDController(.1, 0, 0.005);
     //private VisionSubsystem camera;
     private DoubleSupplier xVelocity;
+    //private DoubleSupplier yVelocity;
     public AlignToReefVision(CommandSwerveDrivetrain drivetrain,  boolean isLeftPole, DoubleSupplier xVelocity) {
         this.drivetrain = drivetrain;
         this.xVelocity = xVelocity;
         if (isLeftPole) {
-            targetTx = 19.18;
+            targetTx = 20.62; //19.18
         }
+
+        targetTx = 0;
     }
 
     @Override
     public void initialize() {
         id = (int) LimelightHelpers.getFiducialID("limelight");
         double setpoint = 0;
-
+        
         switch (id) {
             case 6:
                 setpoint = 120;
@@ -97,6 +100,56 @@ public class AlignToReefVision extends Command {
 
     @Override
     public void execute() {
+
+        if (LimelightHelpers.getTV("limelight") == true) {
+            id = (int) LimelightHelpers.getFiducialID("limelight");
+        }
+        
+        double setpoint = 0;
+        
+        switch (id) {
+            case 6:
+                setpoint = 120;
+                break;
+            case 7:
+                setpoint = 180;
+                break;
+            case 8:
+                setpoint = -120;
+                break;
+            case 9:
+                setpoint = -60;
+                break;
+            case 10:
+                setpoint = 0;
+                break;
+            case 11:
+                setpoint = 60;
+                break;
+            case 17:
+                setpoint = 60;
+                break;
+            case 18:
+                setpoint = 0;
+                break;
+            case 19:
+                setpoint = -60; // -58?
+                break;
+            case 20:
+                setpoint = -120;
+                break;
+            case 21:
+                setpoint = 180;
+                break;
+            case 22:
+                setpoint = 120;
+                break;
+
+        }
+
+        thetaController.setSetpoint(Units.degreesToRadians(setpoint));
+
+
         double thetaVelocity = thetaController.calculate(drivetrain.getState().Pose.getRotation().getRadians());
 
         double yVelocity = yController.calculate(LimelightHelpers.getTX("limelight"));
@@ -114,9 +167,10 @@ public class AlignToReefVision extends Command {
 
         if (LimelightHelpers.getTV("limelight") == true) {
             drivetrain.setControl(applyRobotSpeeds.withSpeeds(velocityToApply));
-        } else {
-            drivetrain.setControl(applyRobotSpeeds.withSpeeds(new ChassisSpeeds(xVelocity.getAsDouble(), 0, thetaVelocity)));
         }
+        // } else {
+        //     //drivetrain.setControl(applyRobotSpeeds.withSpeeds(new ChassisSpeeds(xVelocity.getAsDouble(), 0, thetaVelocity)));
+        // }
         
     }
 

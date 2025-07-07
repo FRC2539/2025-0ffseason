@@ -10,7 +10,6 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.lib.controller.LogitechController;
 import frc.lib.controller.ThrustmasterJoystick;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
@@ -36,7 +35,7 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    private double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -78,7 +77,7 @@ public class RobotContainer {
             //camera = null;
         }
 
-        auto = new Auto(drivetrain);
+        auto = new Auto(drivetrain, this);
 
         configureBindings();
 
@@ -109,12 +108,15 @@ public class RobotContainer {
         // rightJoystick.getTrigger().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse)); stupid lets do this later
 
         // reset the field-centric heading on left bumper press 
-        //operatorController.getLeftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.setOperatorPerspectiveForward(drivetrain.getOperatorForwardDirection()))); 
+        operatorController.getLeftBumper().onTrue(elevator.setVoltage(0));
         operatorController.getRightBumper().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(0,0, drivetrain.getOperatorForwardDirection()))));
         // operatorController.getX().whileTrue(placer.intake(12));
         // operatorController.getY().onTrue(elevator.setPosition(22.4));
         // operatorController.getA().onTrue(elevator.setPosition(.5));
         //operatorController.getY().onTrue(elevator.setVoltage(1.5).andThen(elevator.setPosition(1.5)));
+
+        operatorController.getLeftTrigger().whileTrue(elevator.setVoltage(12));
+        operatorController.getRightTrigger().whileTrue(elevator.setVoltage(-12));
 
         //operatorController.getRightTrigger().onTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
         //operatorController.getLeftTrigger().onTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
@@ -123,8 +125,8 @@ public class RobotContainer {
        // ller.getX().onTrue(climber.upPosition());
         // operatorController.getY().onTrue(climber.downPosition());
 
-        rightJoystick.getLeftThumb().whileTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
-        rightJoystick.getRightThumb().whileTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
+        rightJoystick.getRightThumb().whileTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
+        rightJoystick.getLeftThumb().whileTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 

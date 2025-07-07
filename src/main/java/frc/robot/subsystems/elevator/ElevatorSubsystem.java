@@ -58,4 +58,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     public double getPosition() {
         return elevatorInputs.position;
     }
+
+    public Command offsetTarget(double offset) {
+        return setPosition(elevatorInputs.position + offset);
+    }
 }
