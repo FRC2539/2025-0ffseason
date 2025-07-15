@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
+//import frc.robot.subsytems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.placer.PlacerSubsystem;
 
 public class ModeManager extends SubsystemBase {
@@ -15,10 +16,10 @@ public class ModeManager extends SubsystemBase {
   }
 
   public static enum Position {
-    L1(3.79),
-    L2(7.349),
-    L3(150), //13.42 // 15.049 measured
-    L4(198.16),
+    L1(10),
+    L2(50),
+    L3(100), //13.42 // 15.049 measured
+    L4(160),
 
     Home(0);
   

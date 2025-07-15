@@ -49,10 +49,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Command setPosition(double position) {
-        return Commands.runOnce(
-                () -> {
-                    pivotIO.setPosition(position);
-                }, this);
+        return run(
+            () -> {
+                pivotIO.setPosition(position);
+            }
+        );
+        // return Commands.runOnce(
+        //         () -> {
+        //             pivotIO.setPosition(position);
+        //         }, this);
     }
 
     public double getPosition() {

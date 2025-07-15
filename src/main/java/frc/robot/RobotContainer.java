@@ -30,6 +30,7 @@ import frc.robot.subsystems.placer.PlacerIOSim;
 import frc.robot.subsystems.placer.PlacerSubsystem;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionSubsystem;
+//import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 
 
 
@@ -111,9 +112,18 @@ public class RobotContainer {
         operatorController.getLeftBumper().onTrue(elevator.setVoltage(0));
         operatorController.getRightBumper().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(0,0, drivetrain.getOperatorForwardDirection()))));
         // operatorController.getX().whileTrue(placer.intake(12));
-        // operatorController.getY().onTrue(elevator.setPosition(22.4));
-        // operatorController.getA().onTrue(elevator.setPosition(.5));
+        operatorController.getY().onTrue(elevator.setPosition(202));
+        operatorController.getX().onTrue(elevator.setPosition(100));
+        operatorController.getA().onTrue(elevator.setPosition(0));
+
+        
+        //operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
+        //operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
+
         //operatorController.getY().onTrue(elevator.setVoltage(1.5).andThen(elevator.setPosition(1.5)));
+
+
+        //operatorController.getY().onTrue(elevator.setPosition(0));
 
         operatorController.getLeftTrigger().whileTrue(elevator.setVoltage(12));
         operatorController.getRightTrigger().whileTrue(elevator.setVoltage(-12));
@@ -130,17 +140,15 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-
-
-        operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
-        operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
         operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
         operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
 
         operatorController.getDPadLeft().onTrue(Commands.runOnce(() -> placer.setVoltage(0), placer));
         operatorController.getDPadRight().whileTrue(placer.intakeUntilPieceSet());
-        operatorController.getA().onTrue(Commands.sequence(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
+        
+        //operatorController.getA().onTrue(Commands.sequence(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
 
+        
     
         rightJoystick.getTrigger().onTrue(placer.placePiece());
 
