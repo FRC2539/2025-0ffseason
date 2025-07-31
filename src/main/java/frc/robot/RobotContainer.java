@@ -18,6 +18,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AlignToReefVision;
+import frc.robot.commands.DriveDistance;
+import frc.robot.commands.AlignToAprilTagRelative;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
@@ -112,7 +114,7 @@ public class RobotContainer {
         operatorController.getLeftBumper().onTrue(elevator.setVoltage(0));
         operatorController.getRightBumper().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(0,0, drivetrain.getOperatorForwardDirection()))));
         // operatorController.getX().whileTrue(placer.intake(12));
-        operatorController.getY().onTrue(elevator.setPosition(202));
+        operatorController.getY().onTrue(elevator.setPosition(200));
         operatorController.getX().onTrue(elevator.setPosition(100));
         operatorController.getA().onTrue(elevator.setPosition(0));
 
@@ -122,23 +124,7 @@ public class RobotContainer {
 
         //operatorController.getY().onTrue(elevator.setVoltage(1.5).andThen(elevator.setPosition(1.5)));
 
-
         //operatorController.getY().onTrue(elevator.setPosition(0));
-
-        operatorController.getLeftTrigger().whileTrue(elevator.setVoltage(12));
-        operatorController.getRightTrigger().whileTrue(elevator.setVoltage(-12));
-
-        //operatorController.getRightTrigger().onTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
-        //operatorController.getLeftTrigger().onTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
-        //operatorController.getB().whileTrue(placer.intakeUntilPieceSet());
-        // operatorContro
-       // ller.getX().onTrue(climber.upPosition());
-        // operatorController.getY().onTrue(climber.downPosition());
-
-        rightJoystick.getRightThumb().whileTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
-        rightJoystick.getLeftThumb().whileTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
-
-        drivetrain.registerTelemetry(logger::telemeterize);
 
         operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
         operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
@@ -149,6 +135,61 @@ public class RobotContainer {
         //operatorController.getA().onTrue(Commands.sequence(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
 
         
+
+        operatorController.getLeftTrigger().whileTrue(elevator.setVoltage(12));
+        operatorController.getRightTrigger().whileTrue(elevator.setVoltage(-12));
+
+        //operatorController.getRightTrigger().onTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
+        //operatorController.getLeftTrigger().onTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
+        //operatorController.getB().whileTrue(placer.intakeUntilPieceSet());
+        // operatorController.getX().onTrue(climber.upPosition());
+        // operatorController.getY().onTrue(climber.downPosition());
+
+        //rightJoystick.getRightThumb().whileTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
+        //.getLeftThumb().whileTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
+        Command driveToRightPlaceCommand = Commands.sequence(
+           new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;})
+            ,
+            new DriveDistance( // The name has been changed here
+                drivetrain,
+                -.21,
+                90
+            )
+        );
+        rightJoystick.getRightThumb().whileTrue(driveToRightPlaceCommand);
+
+        Command driveToLeftPlaceCommand = Commands.sequence(
+           new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * .6;})//maxspeed
+            ,
+            new DriveDistance( // The name has been changed here
+                drivetrain,
+                -.21,
+                -90
+            )
+        );
+        rightJoystick.getLeftThumb().whileTrue(driveToLeftPlaceCommand);
+
+        // // Create the sequential command group: Align then Drive
+        // Command driveToPlaceCommand = Commands.sequence(
+        //     new AlignToAprilTagRelative(
+        //         drivetrain,
+        //         0,
+        //         0,
+        //         0
+        //     )
+        //     // ,
+        //     // new DriveDistance( // The name has been changed here
+        //     //     drivetrain,
+        //     //     -.20,
+        //     //     -90
+        //     // )
+        // );
+        
+        // rightJoystick.getLeftThumb().whileTrue(driveToPlaceCommand);
+
+
+        drivetrain.registerTelemetry(logger::telemeterize);
+
     
         rightJoystick.getTrigger().onTrue(placer.placePiece());
 

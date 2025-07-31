@@ -5,6 +5,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 
 
 public class ElevatorIOTalonFX implements ElevatorIO{
@@ -18,7 +19,7 @@ public class ElevatorIOTalonFX implements ElevatorIO{
     public ElevatorIOTalonFX() {
         elevatorLeftMotor.setPosition(0);
         elevatorRightMotor.setPosition(0);
-        
+                
         
         //TalonFXConfiguration rightMotorConfigs = new TalonFXConfiguration();
         ////leftMotorConfigs.MotorOutput.OpenLoopRamp = 0.2;
@@ -43,12 +44,12 @@ public class ElevatorIOTalonFX implements ElevatorIO{
 
         elevatorLeftMotor.getConfigurator().apply(talonFXConfigs);
         //elevatorRightMotor.getConfigurator().apply(rightMotorConfigs);
-        elevatorRightMotor.getConfigurator().apply(talonFXConfigs);
+        //elevatorRightMotor.getConfigurator().apply(talonFXConfigs);
 
-        elevatorLeftMotor.setNeutralMode(NeutralModeValue.Brake);
-        elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
+        elevatorLeftMotor.setNeutralMode(NeutralModeValue.Coast);
+        elevatorRightMotor.setNeutralMode(NeutralModeValue.Coast);
         
-        elevatorRightMotor.setControl(new Follower(elevatorLeftMotor.getDeviceID(), true));
+        elevatorRightMotor.setControl(new Follower(ElevatorConstants.elevatorLeftMotorId, true));
         
         
     }
@@ -71,20 +72,17 @@ public class ElevatorIOTalonFX implements ElevatorIO{
 
 
     public void setPosition(double position) {
-
+        elevatorRightMotor.setControl(new Follower(ElevatorConstants.elevatorLeftMotorId, true));
         //Position Duty Cycle
-        //elevatorLeftMotor.setControl(new PositionDutyCycle(position));
+        elevatorLeftMotor.setControl(new PositionDutyCycle(position));
 
         //Motion Magic
-        elevatorLeftMotor.setControl(new MotionMagicDutyCycle(position));
+        //elevatorLeftMotor.setControl(new MotionMagicDutyCycle(position));
 
     }
 
     public void resetPosition(){
         elevatorLeftMotor.setPosition(0);
     }
-
-   
-    
 
 }
