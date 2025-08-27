@@ -31,12 +31,12 @@ public class ElevatorIOTalonFX implements ElevatorIO{
         // set slot 0 gains
         var slot0Configs = talonFXConfigs.Slot0;
         slot0Configs.kS = 0; // Add 0.25 V output to overcome static friction
-        slot0Configs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
-        slot0Configs.kA = 0.001; // An acceleration of 1 rps/s requires 0.01 V output
+        slot0Configs.kV = 0; // A velocity target of 1 rps results in 0.12 V output
+        slot0Configs.kA = 0; // An acceleration of 1 rps/s requires 0.01 V output
         slot0Configs.kP = 1; // A position error of 2.5 rotations results in 12 V output
-        slot0Configs.kI = 0.001; // no output for integrated error
-        slot0Configs.kD = 0.01; // A velocity error of 1 rps results in 0.1 V output
-        slot0Configs.kG = 1;
+        slot0Configs.kI = 0; // no output for integrated error
+        slot0Configs.kD = 0.02; // A velocity error of 1 rps results in 0.1 V output
+        slot0Configs.kG = 0;
         
         talonFXConfigs.MotionMagic.MotionMagicCruiseVelocity = 80; // Target cruise velocity of 80 rps
         talonFXConfigs.MotionMagic.MotionMagicAcceleration = 160; // Target acceleration of 160 rps/s (0.5 seconds)
@@ -46,8 +46,8 @@ public class ElevatorIOTalonFX implements ElevatorIO{
         //elevatorRightMotor.getConfigurator().apply(rightMotorConfigs);
         //elevatorRightMotor.getConfigurator().apply(talonFXConfigs);
 
-        elevatorLeftMotor.setNeutralMode(NeutralModeValue.Coast);
-        elevatorRightMotor.setNeutralMode(NeutralModeValue.Coast);
+        elevatorLeftMotor.setNeutralMode(NeutralModeValue.Brake);
+        elevatorRightMotor.setNeutralMode(NeutralModeValue.Brake);
         
         elevatorRightMotor.setControl(new Follower(ElevatorConstants.elevatorLeftMotorId, true));
         
@@ -74,7 +74,7 @@ public class ElevatorIOTalonFX implements ElevatorIO{
     public void setPosition(double position) {
         elevatorRightMotor.setControl(new Follower(ElevatorConstants.elevatorLeftMotorId, true));
         //Position Duty Cycle
-        elevatorLeftMotor.setControl(new PositionDutyCycle(position));
+        elevatorLeftMotor.setControl(new MotionMagicDutyCycle(position));
 
         //Motion Magic
         //elevatorLeftMotor.setControl(new MotionMagicDutyCycle(position));

@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AlignToReefVision;
 import frc.robot.commands.DriveDistance;
-import frc.robot.commands.AlignToAprilTagRelative;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
@@ -111,33 +110,35 @@ public class RobotContainer {
         // rightJoystick.getTrigger().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse)); stupid lets do this later
 
         // reset the field-centric heading on left bumper press 
-        operatorController.getLeftBumper().onTrue(elevator.setVoltage(0));
+        //operatorController.getLeftBumper().onTrue(elevator.setVoltage(0));
         operatorController.getRightBumper().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(0,0, drivetrain.getOperatorForwardDirection()))));
         // operatorController.getX().whileTrue(placer.intake(12));
-        operatorController.getY().onTrue(elevator.setPosition(200));
-        operatorController.getX().onTrue(elevator.setPosition(100));
-        operatorController.getA().onTrue(elevator.setPosition(0));
+        // operatorController.getY().onTrue(elevator.setPosition(22.5));
+        // operatorController.getX().onTrue(elevator.setPosition(8));
+        // operatorController.getA().onTrue(elevator.setPosition(0));
 
         
-        //operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
-        //operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
-
+        operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
+        operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
+        operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
+        operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
+        operatorController.getA().onTrue(Commands.parallel(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
         //operatorController.getY().onTrue(elevator.setVoltage(1.5).andThen(elevator.setPosition(1.5)));
 
         //operatorController.getY().onTrue(elevator.setPosition(0));
 
-        operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
-        operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
+        
+        
 
-        operatorController.getDPadLeft().onTrue(Commands.runOnce(() -> placer.setVoltage(0), placer));
+        operatorController.getDPadLeft().onTrue(placer.placePiece());
         operatorController.getDPadRight().whileTrue(placer.intakeUntilPieceSet());
         
-        //operatorController.getA().onTrue(Commands.sequence(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
+        
 
         
 
-        operatorController.getLeftTrigger().whileTrue(elevator.setVoltage(12));
-        operatorController.getRightTrigger().whileTrue(elevator.setVoltage(-12));
+        // operatorController.getLeftTrigger().whileTrue(elevator.setVoltage(12));
+        // operatorController.getRightTrigger().whileTrue(elevator.setVoltage(-12));
 
         //operatorController.getRightTrigger().onTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
         //operatorController.getLeftTrigger().onTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
