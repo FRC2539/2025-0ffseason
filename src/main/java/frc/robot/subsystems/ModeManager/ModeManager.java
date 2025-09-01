@@ -10,18 +10,20 @@ import frc.robot.subsystems.placer.PlacerSubsystem;
 public class ModeManager extends SubsystemBase {
 
   private ElevatorSubsystem elevator;
+  private PlacerSubsystem placer;
 
   public ModeManager(ElevatorSubsystem elevator, PlacerSubsystem placer) {
     this.elevator = elevator;
+    this.placer = placer;
   }
 
   public static enum Position {
     L1(4),
-    L2(12),
-    L3(16), //13.42 // 15.049 measured
+    L2(11.25),
+    L3(16.876), //13.42 // 15.049 measured
     L4(22.5),
 
-    Home(0);
+    Home(1.6);
   
 
     private double elevatorHeight;
@@ -36,6 +38,7 @@ public class ModeManager extends SubsystemBase {
   }
 
   public Command moveElevator(Position position) {
+
     return elevator.setPosition(position.elevatorHeight());
   }
 }

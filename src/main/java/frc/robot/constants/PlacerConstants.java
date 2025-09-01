@@ -6,7 +6,7 @@ public class PlacerConstants {
 
     //Set to preffered voltages
     public static final double handoffVoltage = 12;
-    public static final double slowHandoffVoltage = 6;
+    public static final double slowHandoffVoltage = 2;
     public static final double placeVoltage = 12;
     public static final double downvoltage = 2;
     public static final double upvoltage = 2;

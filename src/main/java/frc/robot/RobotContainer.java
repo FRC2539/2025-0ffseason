@@ -117,21 +117,16 @@ public class RobotContainer {
         // operatorController.getX().onTrue(elevator.setPosition(8));
         // operatorController.getA().onTrue(elevator.setPosition(0));
 
-        
-        operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
-        operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
-        operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
-        operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
         operatorController.getA().onTrue(Commands.parallel(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
-        //operatorController.getY().onTrue(elevator.setVoltage(1.5).andThen(elevator.setPosition(1.5)));
-
-        //operatorController.getY().onTrue(elevator.setPosition(0));
-
-        
+        operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
+        operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
+        operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
         
 
+        operatorController.getDPadUp().onTrue(placer.setVoltage(0));
+        operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
         operatorController.getDPadLeft().onTrue(placer.placePiece());
-        operatorController.getDPadRight().whileTrue(placer.intakeUntilPieceSet());
+        operatorController.getDPadRight().onTrue(placer.intakeUntilPieceSet());
         
         
 

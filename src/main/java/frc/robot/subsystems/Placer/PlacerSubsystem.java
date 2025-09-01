@@ -9,19 +9,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.PlacerConstants;
-import frc.robot.subsystems.placer.PlacerIOInputsAutoLogged;
 
-public class PlacerSubsystem extends SubsystemBase{
+public class PlacerSubsystem extends SubsystemBase {
 
     private PlacerIO placerIO;
 
     private PlacerIOInputsAutoLogged placerInputs = new PlacerIOInputsAutoLogged();
 
-    public final Trigger HAS_PIECE = new Trigger(this::hasPiece);
-    public final Trigger PIECE_SEATED = new Trigger(this::isPieceSeated);
-
-    LoggedNetworkNumber placerVoltage =
-        new LoggedNetworkNumber("Placer Motor Voltage", 0);
+    public final Trigger hasPiece = new Trigger(this::hasPiece);
+    public final Trigger isPieceSeated = new Trigger(this::isPieceSeated);
 
     public PlacerSubsystem(PlacerIO placerIO) {
         this.placerIO = placerIO;
@@ -36,22 +32,28 @@ public class PlacerSubsystem extends SubsystemBase{
     public void periodic() {
         placerIO.updateInputs(placerInputs);
         Logger.processInputs("RealOutputs/Placer", placerInputs);
+
     }
 
     public Command intake(double voltage) {
         return setVoltage(voltage);
     }
 
-    public Command intakeUntilPieceSet(){
-        return setVoltage(PlacerConstants.handoffVoltage)
-            .until(() -> placerInputs.firstSensor)
-            .andThen(Commands.sequence(Commands.waitSeconds(0.15), setVoltage(PlacerConstants.slowHandoffVoltage)
-            .until(() -> placerInputs.secondSensor)));
+    public Command intakeUntilPieceSet() {
+        // return setVoltage(PlacerConstants.handoffVoltage)
+        //     .until(() -> hasPiece.getAsBoolean())
+        //     .andThen(Commands.sequence(Commands.waitSeconds(0.00), setVoltage(PlacerConstants.slowHandoffVoltage)
+        //     .until(() -> isPieceSeated.getAsBoolean())));
+
+        Command one = setVoltage(PlacerConstants.handoffVoltage).until(hasPiece);
+        Command two = setVoltage(PlacerConstants.slowHandoffVoltage).until(isPieceSeated);
+
+        return one.andThen(two).andThen(setVoltage(0));
     }
 
     public Command placePiece() {
         return setVoltage(PlacerConstants.placeVoltage)
-        .until((HAS_PIECE.negate()).and(PIECE_SEATED.negate()))
+        .until((hasPiece.negate()).and(isPieceSeated.negate()))
         .andThen(Commands.waitSeconds(0.3));
     }
 
@@ -63,12 +65,12 @@ public class PlacerSubsystem extends SubsystemBase{
 
     @AutoLogOutput
     public boolean isPieceSeated() {
-        return placerInputs.secondSensor; // inverted
+        return placerInputs.secondSensor;
     }
 
     @AutoLogOutput
     public boolean hasPiece() {
-        return placerInputs.firstSensor; // inverted
+        return placerInputs.firstSensor; 
     }
 
     public boolean intaking() {
