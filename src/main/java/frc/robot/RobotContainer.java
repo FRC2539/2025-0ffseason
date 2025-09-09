@@ -48,8 +48,8 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final ThrustmasterJoystick rightJoystick = new ThrustmasterJoystick(0);
-    private final ThrustmasterJoystick leftJoystick = new ThrustmasterJoystick(1);
+    private final ThrustmasterJoystick rightJoystick = new ThrustmasterJoystick(1);
+    private final ThrustmasterJoystick leftJoystick = new ThrustmasterJoystick(0);
 
     private final LogitechController operatorController = new LogitechController(2);
 
@@ -57,7 +57,7 @@ public class RobotContainer {
     public final ElevatorSubsystem elevator;
     public final PlacerSubsystem placer;
 
-    public final Auto auto;
+    //public final Auto auto;
     public final ModeManager modeManager;
 
     //public final VisionSubsystem camera; 
@@ -79,7 +79,7 @@ public class RobotContainer {
             //camera = null;
         }
 
-        auto = new Auto(drivetrain, this);
+        //auto = new Auto(drivetrain, this);
 
         configureBindings();
 
@@ -201,7 +201,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return auto.getAuto();
+        return Commands.none(); //auto.getAuto();
     }
 
     // public Command alignToReef(int tag, double offset, Rotation2d rotOffset) {
