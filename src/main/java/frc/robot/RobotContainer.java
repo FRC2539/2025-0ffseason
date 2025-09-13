@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.lib.controller.LogitechController;
 import frc.lib.controller.ThrustmasterJoystick;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.numbers.N13;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.AlignToReefNew;
 import frc.robot.commands.AlignToReefVision;
 import frc.robot.commands.DriveDistance;
 import frc.robot.constants.TunerConstants;
@@ -60,7 +62,7 @@ public class RobotContainer {
     //public final Auto auto;
     public final ModeManager modeManager;
 
-    //public final VisionSubsystem camera; 
+    public final VisionSubsystem camera; 
 
     public RobotContainer() {
         
@@ -68,15 +70,16 @@ public class RobotContainer {
             elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
             placer = new PlacerSubsystem(new PlacerIOSRX());
             modeManager = new ModeManager(elevator, placer);
-            //camera = new VisionSubsystem((Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) -> {
-        //         drivetrain.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-        //     }, new VisionIOLimelight("limelight", () -> drivetrain.getPigeon2().getRotation2d()));
+            // camera = new VisionSubsystem((Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) -> {
+            //     drivetrain.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+            // }, new VisionIOLimelight("limelight-left", () -> drivetrain.getPigeon2().getRotation2d()), new VisionIOLimelight("limelight-right", () -> drivetrain.getPigeon2().getRotation2d()));
+            camera = null;
         }
         else {
             elevator = new ElevatorSubsystem(new ElevatorIOSim());
             placer = new PlacerSubsystem(new PlacerIOSim());
             modeManager = null;
-            //camera = null;
+            camera = null;
         }
 
         //auto = new Auto(drivetrain, this);
@@ -103,6 +106,8 @@ public class RobotContainer {
         ));
         
 
+
+        
         // Run SysId routines when holding back/start and X/Y. 
         // Note that each routine should be run exactly once in a single log.
         
@@ -123,8 +128,10 @@ public class RobotContainer {
         operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
         
 
-        operatorController.getDPadUp().onTrue(placer.setVoltage(0));
-        operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
+        //roller.getDPadUp().onTrue(placer.setVoltage(0));
+        operatorController.getDPadUp().whileTrue(new AlignToReefNew(drivetrain, -0.168, 5));
+        operatorController.getDPadUp().whileTrue(new AlignToReefNew(drivetrain, 0, 5));
+       // operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
         operatorController.getDPadLeft().onTrue(placer.placePiece());
         operatorController.getDPadRight().onTrue(placer.intakeUntilPieceSet());
         
