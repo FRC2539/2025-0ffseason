@@ -6,20 +6,28 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Set;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.lib.controller.LogitechController;
 import frc.lib.controller.ThrustmasterJoystick;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N13;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.AlignAndDriveToReef;
+import frc.robot.commands.AlignToReef;
 import frc.robot.commands.AlignToReefVision;
 import frc.robot.commands.DriveDistance;
+import frc.robot.constants.AlignConstants;
 import frc.robot.constants.TunerConstants;
+import frc.robot.constants.VisionConstants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
@@ -122,6 +130,13 @@ public class RobotContainer {
         operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
         operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
         
+        leftJoystick
+        .getBottomThumb()
+        .whileTrue(alignToReef(AlignConstants.leftOffset));
+    rightJoystick
+        .getBottomThumb()
+        .whileTrue(alignToReef(AlignConstants.rightOffset));
+    
 
         operatorController.getDPadUp().onTrue(placer.setVoltage(0));
         operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
@@ -143,27 +158,27 @@ public class RobotContainer {
 
         //rightJoystick.getRightThumb().whileTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
         //.getLeftThumb().whileTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
-        Command driveToRightPlaceCommand = Commands.sequence(
-           new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;})
-            ,
-            new DriveDistance( // The name has been changed here
-                drivetrain,
-                -.21,
-                90
-            )
-        );
-        rightJoystick.getRightThumb().whileTrue(driveToRightPlaceCommand);
+        // Command driveToRightPlaceCommand = Commands.sequence(
+        //    new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;})
+        //     ,
+        //     new DriveDistance( // The name has been changed here
+        //         drivetrain,
+        //         -.21,
+        //         90
+        //     )
+        // );
+        // rightJoystick.getRightThumb().whileTrue(driveToRightPlaceCommand);
 
-        Command driveToLeftPlaceCommand = Commands.sequence(
-           new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * .6;})//maxspeed
-            ,
-            new DriveDistance( // The name has been changed here
-                drivetrain,
-                -.21,
-                -90
-            )
-        );
-        rightJoystick.getLeftThumb().whileTrue(driveToLeftPlaceCommand);
+        // Command driveToLeftPlaceCommand = Commands.sequence(
+        //    new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * .6;})//maxspeed
+        //     ,
+        //     new DriveDistance( // The name has been changed here
+        //         drivetrain,
+        //         -.21,
+        //         -90
+        //     )
+        // );
+        // rightJoystick.getLeftThumb().whileTrue(driveToLeftPlaceCommand);
 
         // // Create the sequential command group: Align then Drive
         // Command driveToPlaceCommand = Commands.sequence(
@@ -203,6 +218,43 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return Commands.none(); //auto.getAuto();
     }
+
+    public Command alignToReef(int tag, double offset, Rotation2d rotOffset) {
+    Pose2d alignmentPose =
+        VisionConstants.aprilTagLayout
+            .getTagPose(tag)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(new Translation2d(AlignConstants.reefDistance, offset), rotOffset));
+    return new AlignToReef(drivetrain, offset, alignmentPose, Rotation2d.kPi);
+  }
+
+  public Command alignToReef(int tag, double offset) {
+    return alignToReef(tag, offset, Rotation2d.kZero);
+  }
+
+  public Command alignToReef(double offset) {
+    return Commands.defer(
+        () -> {
+          Pose2d alignmentPose = drivetrain.findNearestAprilTagPose();
+          return new AlignToReef(drivetrain, offset, alignmentPose, Rotation2d.kPi);
+        },
+        Set.of(drivetrain));
+  }
+
+  public Command alignAndDriveToReef(int tag, double offset) {
+    Pose2d alignmentPose =
+        VisionConstants.aprilTagLayout
+            .getTagPose(tag)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    new Translation2d(AlignConstants.reefDistance, offset), new Rotation2d()));
+    return new AlignAndDriveToReef(drivetrain, 0, alignmentPose, Rotation2d.kPi);
+  }
+
 
     // public Command alignToReef(int tag, double offset, Rotation2d rotOffset) {
     //     Pose2d alignmentPose =

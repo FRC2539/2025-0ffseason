@@ -1,109 +1,107 @@
 package frc.robot.commands;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class AlignToReef extends Command {
     private CommandSwerveDrivetrain drivetrain;
 
-    private DoubleSupplier xVelocity;
-    private DoubleSupplier yVelocity;
+  private final SwerveRequest.ApplyRobotSpeeds driveRequest =
+      new SwerveRequest.ApplyRobotSpeeds().withDriveRequestType(DriveRequestType.Velocity);
+  // private final SwerveRequest.ApplyRobotSpeeds applyRobotSpeeds = new
+  // SwerveRequest.ApplyRobotSpeeds();
 
-    private PIDController thetaController = new PIDController(4, 0, 0);
-    // private ProfiledPIDController yController = new ProfiledPIDController(8, 0, 0, new
-    // TrapezoidProfile.Constraints(5.5, 8));
-    private PIDController yController = new PIDController(8, 0, 0);
+  private PIDController thetaController = new PIDController(1, 0, 0);
+  private PIDController yController = new PIDController(1, 0, 0);
+  private PIDController xController = new PIDController(1, 0, 0);
 
-    private Pose2d targetPose;
-    private double offset;
-    private Rotation2d rotationOffset;
+  private Pose2d targetPose;
+  private double offset;
+  private Rotation2d rotationOffset;
 
-    private Timer slewerTimer = new Timer();
+  public AlignToReef(
+      CommandSwerveDrivetrain drive,
+      double alignmentOffset,
+      Pose2d alignmentPose,
+      Rotation2d rotationOffset) {
+    this.drivetrain = drive;
+    this.offset = alignmentOffset;
+    this.targetPose = alignmentPose;
+    this.rotationOffset = rotationOffset;
+  }
 
-    public AlignToReef(
-            CommandSwerveDrivetrain drivetrain,
-            DoubleSupplier xVelocity,
-            DoubleSupplier yVelocity,
-            double alignmentOffset,
-            Pose2d alignmentPose,
-            Rotation2d rotationOffset) {
-        this.drivetrain = drivetrain;
-        this.xVelocity = xVelocity;
-        this.yVelocity = yVelocity;
-        this.offset = alignmentOffset;
-        this.targetPose = alignmentPose;
-        this.rotationOffset = rotationOffset;
+  @Override
+  public void initialize() {
+    Pose2d tCurrentPose = drivetrain.getState().Pose;
+
+    Logger.recordOutput("/AutoAlign/CurrentPose", tCurrentPose);
+    Logger.recordOutput("/AutoAlign/TargetPose", targetPose);
+    Logger.recordOutput("/AutoAlign/Offset", offset);
+
+    thetaController.setSetpoint(rotationOffset.getRadians());
+    yController.setSetpoint(offset);
+    thetaController.enableContinuousInput(0, 2 * Math.PI);
+    thetaController.setTolerance(Units.degreesToRadians(0.5));
+    yController.setTolerance(Units.inchesToMeters(0.2));
+  }
+
+  @Override
+  public void execute() {
+    // double currentHeading = drivetrain.getState().Pose.getRotation().getRadians();
+    Pose2d currentPose = drivetrain.getState().Pose;
+
+    Transform2d offset = currentPose.minus(targetPose);
+
+    double thetaVelocity = thetaController.calculate(offset.getRotation().getRadians(), 0);
+    if (thetaController.atSetpoint()) {
+      thetaVelocity = 0;
+    }
+    double yVelocity = yController.calculate(offset.getY());
+    if (yController.atSetpoint()) {
+      yVelocity = 0;
+    }
+    double xVelocity = xController.calculate(offset.getX());
+    if (xController.atSetpoint()) {
+      xVelocity = 0;
     }
 
-    @Override
-    public void initialize() {
+    Rotation2d tagRotation = targetPose.getRotation();
 
-        // Camera id
-        // tagId
-        // Rotation to face the tag
-        slewerTimer.restart();
-        Pose2d tCurrentPose = drivetrain.getState().Pose;
-        Logger.recordOutput("/AutoAlign/CurrentPose", tCurrentPose);
-        Logger.recordOutput("/AutoAlign/TargetPose", targetPose);
-        Logger.recordOutput("/AutoAlign/Offset", offset);
+    ChassisSpeeds driverCommandedVelocities =
+        new ChassisSpeeds(xVelocity, yVelocity, thetaVelocity);
 
-        thetaController.setSetpoint(rotationOffset.getRadians());
-        yController.setSetpoint(offset);
-        thetaController.enableContinuousInput(0, 2 * Math.PI);
-        thetaController.setTolerance(Units.degreesToRadians(0.5));
-        yController.setTolerance(Units.inchesToMeters(0.2));
-    }
+    drivetrain.setControl(driveRequest.withSpeeds(driverCommandedVelocities));
 
-    @Override
-    public void execute() {
-        // double currentHeading = drivetrain.getState().Pose.getRotation().getRadians();
-        Pose2d currentPose = drivetrain.getState().Pose;
+    ChassisSpeeds fieldCommandedVelocities =
+        ChassisSpeeds.fromRobotRelativeSpeeds(
+            driverCommandedVelocities, drivetrain.getOperatorForwardDirection());
 
-        Transform2d offset = currentPose.minus(targetPose);
+    ChassisSpeeds tagRelativeCommandedVelocities =
+        ChassisSpeeds.fromFieldRelativeSpeeds(fieldCommandedVelocities, tagRotation);
 
-        double thetaVelocity = thetaController.calculate(offset.getRotation().getRadians());
-        if (thetaController.atSetpoint()) {
-            thetaVelocity = 0;
-        }
-        double yVelocityController = yController.calculate(offset.getY());
-        if (yController.atSetpoint()) {
-            yVelocityController = 0;
-        }
+    tagRelativeCommandedVelocities.vyMetersPerSecond = yVelocity;
+    tagRelativeCommandedVelocities.vxMetersPerSecond = xVelocity;
+    tagRelativeCommandedVelocities.omegaRadiansPerSecond = thetaVelocity;
 
-        Rotation2d tagRotation = targetPose.getRotation();
+    ChassisSpeeds fieldRelativeSpeeds =
+        ChassisSpeeds.fromRobotRelativeSpeeds(tagRelativeCommandedVelocities, tagRotation);
 
-        ChassisSpeeds driverCommandedVelocities =
-                new ChassisSpeeds(xVelocity.getAsDouble(), yVelocity.getAsDouble(), 0);
+    //
 
-        ChassisSpeeds fieldCommandedVelocities =
-                ChassisSpeeds.fromRobotRelativeSpeeds(
-                        driverCommandedVelocities, drivetrain.getOperatorForwardDirection());
+  }
 
-        ChassisSpeeds tagRelativeCommandedVelocities =
-                ChassisSpeeds.fromFieldRelativeSpeeds(fieldCommandedVelocities, tagRotation);
-
-        tagRelativeCommandedVelocities.vyMetersPerSecond = yVelocityController;
-        tagRelativeCommandedVelocities.omegaRadiansPerSecond = thetaVelocity;
-
-        ChassisSpeeds fieldRelativeSpeeds =
-                ChassisSpeeds.fromRobotRelativeSpeeds(tagRelativeCommandedVelocities, tagRotation);
-
-        // System.out.println(offset.getRotation().getRadians());
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
-        // return thetaController.atSetpoint() && yController.atSetpoint();
-    }
+  @Override
+  public boolean isFinished() {
+    return xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint();
+  }
 }
