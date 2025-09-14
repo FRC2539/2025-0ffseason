@@ -19,6 +19,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AlignToReefNew;
+import frc.robot.commands.AlignToReefCP;
+import frc.robot.commands.AlignToReefCPPPID;
 import frc.robot.commands.AlignToReefVision;
 import frc.robot.commands.DriveDistance;
 import frc.robot.constants.TunerConstants;
@@ -129,8 +131,12 @@ public class RobotContainer {
         
 
         //roller.getDPadUp().onTrue(placer.setVoltage(0));
-        operatorController.getDPadUp().whileTrue(new AlignToReefNew(drivetrain, -0.168, 5));
-        operatorController.getDPadUp().whileTrue(new AlignToReefNew(drivetrain, 0, 5));
+        // operatorController.getDPadUp().whileTrue(new AlignToReefBlue(drivetrain, -.0821, -.0625)); //right
+        // operatorController.getDPadUp().whileTrue(new AlignToReefCP(drivetrain, .0884, -.071));
+        operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
+
+        // operatorController.getDPadUp().whileTrue(new AlignToReefNew(drivetrain, -0.168, 5));
+        //operatorController.getDPadUp().whileTrue(new AlignToReefNew(drivetrain, 0, 5));
        // operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
         operatorController.getDPadLeft().onTrue(placer.placePiece());
         operatorController.getDPadRight().onTrue(placer.intakeUntilPieceSet());
@@ -151,23 +157,23 @@ public class RobotContainer {
         //rightJoystick.getRightThumb().whileTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
         //.getLeftThumb().whileTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
         Command driveToRightPlaceCommand = Commands.sequence(
-           new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;})
+           new AlignToReefCPPPID(drivetrain, -.184, -.05)
             ,
             new DriveDistance( // The name has been changed here
                 drivetrain,
-                -.21,
-                90
+                -.5,
+                180
             )
         );
         rightJoystick.getRightThumb().whileTrue(driveToRightPlaceCommand);
 
         Command driveToLeftPlaceCommand = Commands.sequence(
-           new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * .6;})//maxspeed
+           new AlignToReefCPPPID(drivetrain, .0884, -.071)
             ,
             new DriveDistance( // The name has been changed here
                 drivetrain,
-                -.21,
-                -90
+                -.5,
+                180
             )
         );
         rightJoystick.getLeftThumb().whileTrue(driveToLeftPlaceCommand);
@@ -207,60 +213,9 @@ public class RobotContainer {
         // operatorController.getDPadLeft().onTrue(placer.run(() -> placer.intakeUntilPieceContained()));
     }
 
-    public Command getAutonomousCommand() {
-        return Commands.none(); //auto.getAuto();
-    }
-
-    // public Command alignToReef(int tag, double offset, Rotation2d rotOffset) {
-    //     Pose2d alignmentPose =
-    //             VisionConstants.aprilTagLayout
-    //                     .getTagPose(tag)
-    //                     .get()
-    //                     .toPose2d()
-    //                     .plus(
-    //                             new Transform2d(
-    //                                     new Translation2d(AligningConstants.reefDistance, offset),
-    //                                     rotOffset));
-    //     return new AlignToReef(
-    //             drivetrain,
-    //             leftJoystickVelocityX,
-    //             leftJoystickVelocityY,
-    //             0,
-    //             alignmentPose,
-    //             Rotation2d.kPi);
+    // public Command getAutonomousCommand() {
+    //     return auto.getAuto();
     // }
 
-    // public Command alignToReef(int tag, double offset) {
-    //     return alignToReef(tag, offset, Rotation2d.kZero);
-    // }
-
-    // // Automatically chooses closest tag
-    // public Command alignToReef(double offset) {
-    //     return Commands.defer(
-    //             () -> {
-    //                 Pose2d alignmentPose = drivetrain.findNearestAprilTagPose();
-    //                 return new AlignToReef(
-    //                         drivetrain,
-    //                         leftJoystickVelocityX,
-    //                         leftJoystickVelocityY,
-    //                         offset,
-    //                         alignmentPose,
-    //                         Rotation2d.kPi);
-    //             },
-    //             Set.of(drivetrain));
-    // }
-
-    // public Command alignAndDriveToReef(int tag, double offset) {
-    //     Pose2d alignmentPose =
-    //             VisionConstants.aprilTagLayout
-    //                     .getTagPose(tag)
-    //                     .get()
-    //                     .toPose2d()
-    //                     .plus(
-    //                             new Transform2d(
-    //                                     new Translation2d(AligningConstants.reefDistance, offset),
-    //                                     new Rotation2d()));
-    //     return new AlignAndDriveToReef(drivetrain, 0, alignmentPose, Rotation2d.kPi);
-    // }
 
 }

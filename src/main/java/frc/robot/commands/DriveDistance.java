@@ -75,9 +75,9 @@ public class DriveDistance extends Command {
         yController.reset();
         thetaController.reset();
 
-        System.out.println("DriveDistance: Initializing. Target Field (X,Y)=(" +
-                           String.format("%.2f", targetRobotX) + ", " + String.format("%.2f", targetRobotY) +
-                           "), Target Heading=" + String.format("%.2f", Units.radiansToDegrees(initialHeadingRadians)) + "deg");
+        //System.out.println("DriveDistance: Initializing. Target Field (X,Y)=(" +
+                        //    String.format("%.2f", targetRobotX) + ", " + String.format("%.2f", targetRobotY) +
+                        //    "), Target Heading=" + String.format("%.2f", Units.radiansToDegrees(initialHeadingRadians)) + "deg");
     }
 
     @Override
@@ -113,12 +113,12 @@ public class DriveDistance extends Command {
         // Apply these robot-relative speeds to the drivetrain
         drivetrain.setControl(applyRobotSpeeds.withSpeeds(robotRelativeSpeeds));
 
-        System.out.println("DriveDistance: Current Robot-Centric (X,Y)=(" +
-                            String.format("%.2f", currentRobotXDisplacement) + ", " +
-                            String.format("%.2f", currentRobotYDisplacement) +
-                            "), Vx=" + String.format("%.2f", xVelocity) +
-                            ", Vy=" + String.format("%.2f", yVelocity) +
-                            ", Theta=" + String.format("%.2f", Units.radiansToDegrees(currentPose.getRotation().getRadians())) + " deg");
+        // System.out.println("DriveDistance: Current Robot-Centric (X,Y)=(" +
+        //                     String.format("%.2f", currentRobotXDisplacement) + ", " +
+        //                     String.format("%.2f", currentRobotYDisplacement) +
+        //                     "), Vx=" + String.format("%.2f", xVelocity) +
+        //                     ", Vy=" + String.format("%.2f", yVelocity) +
+        //                     ", Theta=" + String.format("%.2f", Units.radiansToDegrees(currentPose.getRotation().getRadians())) + " deg");
     }
 
     @Override
@@ -131,6 +131,6 @@ public class DriveDistance extends Command {
     public void end(boolean interrupted) {
         // Stop the drivetrain
         drivetrain.setControl(applyRobotSpeeds.withSpeeds(new ChassisSpeeds(0, 0, 0)));
-        System.out.println("DriveDistance: Finished or Interrupted. Final Position: " + drivetrain.getRobotPose().getTranslation().toString());
+        // System.out.println("DriveDistance: Finished or Interrupted. Final Position: " + drivetrain.getRobotPose().getTranslation().toString());
     }
 }

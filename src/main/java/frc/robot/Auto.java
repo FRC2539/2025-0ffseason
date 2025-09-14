@@ -46,7 +46,9 @@ public class Auto {
 
     public Command getAuto() {
         if (AutoBuilder.isConfigured()) {
-            return autoChooser.get().andThen(container.modeManager.moveElevator(Position.L4).withTimeout(2)).andThen(Commands.sequence(Commands.waitSeconds(3), container.placer.placePiece()));
+            return autoChooser.get().andThen(container.modeManager.moveElevator(Position.L4)
+            .withTimeout(2)).andThen(Commands.sequence(Commands.waitSeconds(3)
+            , container.placer.placePiece()));
         } else {
             return Commands.none();
         }

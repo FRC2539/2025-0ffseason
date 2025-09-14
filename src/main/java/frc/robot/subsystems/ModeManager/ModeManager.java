@@ -18,12 +18,12 @@ public class ModeManager extends SubsystemBase {
   }
 
   public static enum Position {
-    L1(4),
-    L2(11.25),
-    L3(16.876), //13.42 // 15.049 measured
+    L1(5.5),
+    L2(8),
+    L3(13), //13.42 // 15.049 measured
     L4(22.5),
 
-    Home(1.6);
+    Home(1);
   
 
     private double elevatorHeight;

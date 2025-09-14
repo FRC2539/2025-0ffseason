@@ -86,9 +86,10 @@ public class AlignToAprilTagRelative extends Command {
                 double thetaVelocity = thetaController.calculate(currentTargetRotationZ, desiredTargetRotationZ_radians)
                 ;
                 //System.out.println("tx: "+xVelocity+" c: "+ currentTargetX+" t:"+desiredTargetX_robotRelative);
-                System.out.println("tx: "+thetaVelocity+" c: "+ currentTargetRotationZ+" t:"+desiredTargetRotationZ_radians);
+                //System.out.println("tx: "+thetaVelocity+" c: "+ currentTargetRotationZ+" t:"+desiredTargetRotationZ_radians);
                 //System.out.println("tcZ: "+thetaVelocity);
                 //System.out.println("tcZ: "+thetaVelocity);
+
 
                 ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0, xVelocity, thetaVelocity);;
                 // if (!xController.atSetpoint()){

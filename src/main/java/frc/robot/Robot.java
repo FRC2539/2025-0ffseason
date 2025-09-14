@@ -54,11 +54,11 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+    // if (m_autonomousCommand != null) {
+    //   m_autonomousCommand.schedule();
+    // }
   }
 
   @Override
@@ -77,8 +77,8 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     //System.out.println(m_robotContainer.placer.isPieceSeated());
-    double[] positions = LimelightHelpers.getBotPose_TargetSpace("limelight-left");
-    System.out.println(positions[1]);
+    //double[] positions = LimelightHelpers.getBotPose_TargetSpace("limelight-left");
+    //System.out.println(positions[1]);
   }
 
   @Override

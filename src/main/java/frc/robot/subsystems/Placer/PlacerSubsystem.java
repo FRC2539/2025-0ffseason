@@ -54,7 +54,7 @@ public class PlacerSubsystem extends SubsystemBase {
     public Command placePiece() {
         return setVoltage(PlacerConstants.placeVoltage)
         .until((hasPiece.negate()).and(isPieceSeated.negate()))
-        .andThen(Commands.waitSeconds(0.3));
+        .andThen(Commands.waitSeconds(0.5));
     }
 
     public Command setVoltage(double voltage) {

@@ -94,8 +94,8 @@ public class AlignToReefVision extends Command {
 
         double yVelocity = yController.calculate(LimelightHelpers.getTX("limelight"),0);
 
-        System.out.println("ty: "+yVelocity+" c: "+ LimelightHelpers.getTX("limelight")+" t:"+0);
-        System.out.println("tz: "+thetaVelocity+" c: "+ -drivetrain.getState().Pose.getRotation().getDegrees()+" t:"+setpoint);
+        // System.out.println("ty: "+yVelocity+" c: "+ LimelightHelpers.getTX("limelight")+" t:"+0);
+        // System.out.println("tz: "+thetaVelocity+" c: "+ -drivetrain.getState().Pose.getRotation().getDegrees()+" t:"+setpoint);
     
         ChassisSpeeds velocityToApply = new ChassisSpeeds(xVelocity.getAsDouble(), yVelocity, thetaVelocity);
         
@@ -109,9 +109,9 @@ public class AlignToReefVision extends Command {
     @Override
     public boolean isFinished() {
         if (yController.atSetpoint() && thetaController.atSetpoint()){
-            System.out.println("finished");
+            // System.out.println("finished");
         } else {
-            System.out.println("not finished y: "+yController.getError()+" y tol: "+yController.getErrorTolerance()+" z: "+thetaController.getError()+" z tol: "+thetaController.getErrorTolerance());
+            // System.out.println("not finished y: "+yController.getError()+" y tol: "+yController.getErrorTolerance()+" z: "+thetaController.getError()+" z tol: "+thetaController.getErrorTolerance());
         }
         return yController.atSetpoint() && thetaController.atSetpoint();
         // return false; 
