@@ -119,6 +119,8 @@ public class DriveDistance extends Command {
         //                     "), Vx=" + String.format("%.2f", xVelocity) +
         //                     ", Vy=" + String.format("%.2f", yVelocity) +
         //                     ", Theta=" + String.format("%.2f", Units.radiansToDegrees(currentPose.getRotation().getRadians())) + " deg");
+
+        System.out.println("DRIVING INNNNN :)))");
     }
 
     @Override

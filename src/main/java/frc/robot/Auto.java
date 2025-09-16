@@ -14,6 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.AlignToReefCPPPID;
+import frc.robot.commands.DriveDistance;
+import frc.robot.constants.GlobalConstants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.modeManager.ModeManager.Position;
 
@@ -36,35 +39,59 @@ public class Auto {
     // *NEW
     private final Field2d m_trajectoryField = new Field2d();
 
-    public Auto(CommandSwerveDrivetrain drivetrain, RobotContainer container) {
+    public Auto(CommandSwerveDrivetrain drivetrain, RobotContainer ct) {
+        this.container = ct;
         setUpPathPlanner(drivetrain);
-    
+        // named commands
+
+        createNamedCommands();
+        
         autoChooser = new LoggedDashboardChooser<>("Auto Routine", AutoBuilder.buildAutoChooser());
         SmartDashboard.putData("Auto Path", m_trajectoryField);
-        this.container = container;
+        
     }
 
     public Command getAuto() {
-        if (AutoBuilder.isConfigured()) {
-            return autoChooser.get().andThen(container.modeManager.moveElevator(Position.L4)
-            .withTimeout(2)).andThen(Commands.sequence(Commands.waitSeconds(3)
-            , container.placer.placePiece()));
-        } else {
-            return Commands.none();
-        }
+        return autoChooser.get();
+    }
+
+    public void createNamedCommands() {
+
+        Command driveToRightPlaceCommand = Commands.sequence(
+           new AlignToReefCPPPID(container.drivetrain, -.184, -.05)
+            ,
+            new DriveDistance( // The name has been changed here
+                this.container.drivetrain,
+                -.5,
+                180
+            )
+        );
+     
+
+        Command driveToLeftPlaceCommand = Commands.sequence(
+           new AlignToReefCPPPID(container.drivetrain, .0884, -.071)
+            ,
+            new DriveDistance( // The name has been changed here
+                this.container.drivetrain,
+                -.5,
+                180
+            )
+        );
+       
+        NamedCommands.registerCommand("place", container.placer.placePiece());
+        NamedCommands.registerCommand("intake", container.placer.placePiece());
+        
+        NamedCommands.registerCommand("goto L4", container.modeManager.moveElevator(Position.L4));
+
+        NamedCommands.registerCommand("align right", driveToRightPlaceCommand);
+        NamedCommands.registerCommand("align left", driveToLeftPlaceCommand);
     }
 
     public void setUpPathPlanner(frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain drivetrain) {
-        try {
-            config = RobotConfig.fromGUISettings();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        
+            config = GlobalConstants.getRobotConfigPathplanner();
+        
+            
         AutoBuilder.configure(
                 drivetrain::getRobotPose,
                 drivetrain::resetPose,

@@ -37,7 +37,7 @@ public class AlignToReefCPPPID extends Command {
         this.targetTy = targetTy;
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
-        thetaController.setTolerance(Math.toRadians(2));
+        thetaController.setTolerance(Math.toRadians(1));
     }
 
     @Override
@@ -79,6 +79,8 @@ public class AlignToReefCPPPID extends Command {
         } else {
             drivetrain.setControl(applySpeeds.withSpeeds(new ChassisSpeeds(0, 0, 0)));
         }
+
+        System.out.println("ALIGNING");
     }
 
     @Override

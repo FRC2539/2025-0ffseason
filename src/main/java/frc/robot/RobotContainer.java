@@ -61,7 +61,7 @@ public class RobotContainer {
     public final ElevatorSubsystem elevator;
     public final PlacerSubsystem placer;
 
-    //public final Auto auto;
+    public final Auto auto;
     public final ModeManager modeManager;
 
     public final VisionSubsystem camera; 
@@ -84,7 +84,7 @@ public class RobotContainer {
             camera = null;
         }
 
-        //auto = new Auto(drivetrain, this);
+        auto = new Auto(drivetrain, this);
 
         configureBindings();
 
@@ -213,9 +213,9 @@ public class RobotContainer {
         // operatorController.getDPadLeft().onTrue(placer.run(() -> placer.intakeUntilPieceContained()));
     }
 
-    // public Command getAutonomousCommand() {
-    //     return auto.getAuto();
-    // }
+    public Command getAutonomousCommand() {
+        return auto.getAuto();
+    }
 
 
 }
