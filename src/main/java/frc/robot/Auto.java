@@ -58,7 +58,7 @@ public class Auto {
     public void createNamedCommands() {
 
         Command driveToRightPlaceCommand = Commands.sequence(
-           new AlignToReefCPPPID(container.drivetrain, -.184, -.05)
+           new AlignToReefCPPPID(container.drivetrain, -.184, -.05, "limelight-right")
             ,
             new DriveDistance( // The name has been changed here
                 this.container.drivetrain,
@@ -69,7 +69,7 @@ public class Auto {
      
 
         Command driveToLeftPlaceCommand = Commands.sequence(
-           new AlignToReefCPPPID(container.drivetrain, .0884, -.071)
+           new AlignToReefCPPPID(container.drivetrain, .0884, -.071, "limelight-left")
             ,
             new DriveDistance( // The name has been changed here
                 this.container.drivetrain,

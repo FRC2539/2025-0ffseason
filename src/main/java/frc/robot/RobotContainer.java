@@ -18,8 +18,6 @@ import edu.wpi.first.math.numbers.N13;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.commands.AlignToReefNew;
-import frc.robot.commands.AlignToReefCP;
 import frc.robot.commands.AlignToReefCPPPID;
 import frc.robot.commands.AlignToReefVision;
 import frc.robot.commands.DriveDistance;
@@ -118,7 +116,7 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press 
         //operatorController.getLeftBumper().onTrue(elevator.setVoltage(0));
-        operatorController.getRightBumper().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(0,0, drivetrain.getOperatorForwardDirection()))));
+        rightJoystick.getLeftTopLeft().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(0,0, drivetrain.getOperatorForwardDirection()))));
         // operatorController.getX().whileTrue(placer.intake(12));
         // operatorController.getY().onTrue(elevator.setPosition(22.5));
         // operatorController.getX().onTrue(elevator.setPosition(8));
@@ -157,24 +155,24 @@ public class RobotContainer {
         //rightJoystick.getRightThumb().whileTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
         //.getLeftThumb().whileTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
         Command driveToRightPlaceCommand = Commands.sequence(
-           new AlignToReefCPPPID(drivetrain, -.184, -.05)
-            ,
-            new DriveDistance( // The name has been changed here
-                drivetrain,
-                -.5,
-                180
-            )
+           new AlignToReefCPPPID(drivetrain, -.2735, -30.41, "limelight-right")
+            //,
+            // new DriveDistance( // The name has been changed here
+            //     drivetrain,
+            //     -.5,
+            //     180
+            // )
         );
         rightJoystick.getRightThumb().whileTrue(driveToRightPlaceCommand);
 
         Command driveToLeftPlaceCommand = Commands.sequence(
-           new AlignToReefCPPPID(drivetrain, .0884, -.071)
-            ,
-            new DriveDistance( // The name has been changed here
-                drivetrain,
-                -.5,
-                180
-            )
+           new AlignToReefCPPPID(drivetrain, .24, 26.67, "limelight-left")
+            //,
+            // new DriveDistance( // The name has been changed here
+            //     drivetrain,
+            //     -.5,
+            //     180
+            // )
         );
         rightJoystick.getLeftThumb().whileTrue(driveToLeftPlaceCommand);
 

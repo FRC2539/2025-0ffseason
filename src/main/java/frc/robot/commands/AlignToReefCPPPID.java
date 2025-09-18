@@ -14,7 +14,7 @@ public class AlignToReefCPPPID extends Command {
     private final SwerveRequest.ApplyRobotSpeeds applySpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
     private final PIDController xController = new PIDController(1, 0, 0);
-    private final PIDController yController = new PIDController(5, 0, 0);
+    private final PIDController yController = new PIDController(.065, 0.00, 0.001);
 
     private final ProfiledPIDController thetaController = new ProfiledPIDController(
             2.2,
@@ -30,11 +30,14 @@ public class AlignToReefCPPPID extends Command {
     double targetTy = -.0625;
     double desiredZ = 0;
 
-    public AlignToReefCPPPID(CommandSwerveDrivetrain dt, double targetTx, double targetTy) {
+    String c;
+    public 
+    AlignToReefCPPPID(CommandSwerveDrivetrain dt, double targetTx, double targetTy, String camera) {
         this.drivetrain = dt;
         addRequirements(drivetrain);
         this.targetTx = targetTx;
         this.targetTy = targetTy;
+        this.c = camera;
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         thetaController.setTolerance(Math.toRadians(1));
@@ -46,18 +49,20 @@ public class AlignToReefCPPPID extends Command {
         yController.setSetpoint(this.targetTy);
         thetaController.setGoal(desiredZ);
 
-        xController.setTolerance(0.1);
-        yController.setTolerance(0.01);
+        xController.setTolerance(0.01);
+        yController.setTolerance(0.15);
     }
 
     @Override
     public void execute() {
-        String currentCamera = LimelightHelpers.getTV("limelight-left") ? "limelight-left" : "limelight-right";
+       // String currentCamera = LimelightHelpers.getTV("limelight-left") ? "limelight-left" : "limelight-right";
+        String currentCamera = c;
         double[] botPose = LimelightHelpers.getTargetPose_CameraSpace(currentCamera);
 
         if (LimelightHelpers.getTV(currentCamera) && botPose.length > 0) {
             double currentX = botPose[0];
-            double currentY = botPose[1];
+            //double currentY = botPose[1];
+            double currentY = LimelightHelpers.getTX(currentCamera);
             double currentAngle = Math.toRadians(botPose[5]);
 
             double xSpeed = 0;
@@ -65,26 +70,29 @@ public class AlignToReefCPPPID extends Command {
             double thetaSpeed = 0;
 
             if ("limelight-right".equals(currentCamera)) {
-                xSpeed = -xController.calculate(currentX);
+                //xSpeed = -xController.calculate(currentX);
                 ySpeed = yController.calculate(currentY);
-                thetaSpeed = thetaController.calculate(currentAngle, desiredZ + Math.toRadians(3.5));
+                //thetaSpeed = thetaController.calculate(currentAngle, desiredZ + Math.toRadians(3.5));
             } else {
-                xSpeed = xController.calculate(currentX);
-                ySpeed = -yController.calculate(currentY);
-                thetaSpeed = thetaController.calculate(currentAngle, desiredZ - Math.toRadians(3.5));
+                //xSpeed = xController.calculate(currentX);
+                ySpeed = yController.calculate(currentY);
+                //thetaSpeed = thetaController.calculate(currentAngle, desiredZ - Math.toRadians(3.5));
             }
 
-            ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, thetaSpeed);
+            ChassisSpeeds speeds = new ChassisSpeeds(0.00, ySpeed, thetaSpeed);
             drivetrain.setControl(applySpeeds.withSpeeds(speeds));
         } else {
             drivetrain.setControl(applySpeeds.withSpeeds(new ChassisSpeeds(0, 0, 0)));
         }
 
-        System.out.println("ALIGNING");
+        System.out.println(isFinished());
     }
 
     @Override
     public boolean isFinished() {
-        return xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint();
+        System.out.println(yController.getError());
+        return yController.atSetpoint();
+        
+        
     }
 }

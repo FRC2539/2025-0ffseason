@@ -79,6 +79,9 @@ public class Robot extends LoggedRobot {
     //System.out.println(m_robotContainer.placer.isPieceSeated());
     //double[] positions = LimelightHelpers.getBotPose_TargetSpace("limelight-left");
     //System.out.println(positions[1]);
+
+    //System.out.println("camera-left: "  + LimelightHelpers.getTargetPose_CameraSpace("limelight-left")[0] + "  " + LimelightHelpers.getTargetPose_CameraSpace("limelight-left")[1]);
+    //System.out.println("camera-right: " + LimelightHelpers.getTargetPose_CameraSpace("limelight-right")[0] + "  " + LimelightHelpers.getTargetPose_CameraSpace("limelight-right")[1]);
   }
 
   @Override
