@@ -155,7 +155,7 @@ public class RobotContainer {
         //rightJoystick.getRightThumb().whileTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
         //.getLeftThumb().whileTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
         Command driveToRightPlaceCommand = Commands.sequence(
-           new AlignToReefCPPPID(drivetrain, -.2735, -30.41, "limelight-right")
+           new AlignToReefCPPPID(drivetrain, 0.05, -7, "limelight-right")
             //,
             // new DriveDistance( // The name has been changed here
             //     drivetrain,
@@ -166,7 +166,7 @@ public class RobotContainer {
         rightJoystick.getRightThumb().whileTrue(driveToRightPlaceCommand);
 
         Command driveToLeftPlaceCommand = Commands.sequence(
-           new AlignToReefCPPPID(drivetrain, .24, 26.67, "limelight-left")
+           new AlignToReefCPPPID(drivetrain, 0.05, -3.32, "limelight-left")
             //,
             // new DriveDistance( // The name has been changed here
             //     drivetrain,
