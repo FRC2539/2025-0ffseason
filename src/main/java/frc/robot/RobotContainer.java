@@ -130,12 +130,15 @@ public class RobotContainer {
         operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
         operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
         
-        leftJoystick
-        .getBottomThumb()
-        .whileTrue(alignToReef(AlignConstants.leftOffset));
-    rightJoystick
-        .getBottomThumb()
-        .whileTrue(alignToReef(AlignConstants.rightOffset));
+    //     leftJoystick
+    //     .getBottomThumb()
+    //     .whileTrue(alignToReef(AlignConstants.leftOffset));
+    // rightJoystick
+    //     .getBottomThumb()
+    //     .whileTrue(alignToReef(AlignConstants.rightOffset))
+    
+        leftJoystick.getBottomThumb().whileTrue(Commands.defer(() -> 
+            new AlignAndDriveToReef(drivetrain, 0, drivetrain.findNearestAprilTagPose(), new Rotation2d()), Set.of(drivetrain)));
     
 
         operatorController.getDPadUp().onTrue(placer.setVoltage(0));

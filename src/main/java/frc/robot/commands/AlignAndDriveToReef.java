@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -13,6 +15,7 @@ import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
 
 public class AlignAndDriveToReef extends Command {
   private CommandSwerveDrivetrain drivetrain;
+  private final SwerveRequest.ApplyFieldSpeeds applyFieldSpeeds = new SwerveRequest.ApplyFieldSpeeds();
   // TODO tune
 
   private PIDController thetaController = new PIDController(1, 0, 0);
@@ -76,12 +79,18 @@ public class AlignAndDriveToReef extends Command {
     ChassisSpeeds fieldRelativeSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(tagRelativeCommandedVelocities, tagRotation);
 
+    drivetrain.setControl(applyFieldSpeeds.withSpeeds(fieldRelativeSpeeds));
     // System.out.println(offset.getRotation().getRadians());
   }
 
   @Override
   public boolean isFinished() {
-    return false;
-    // return thetaController.atSetpoint() && yController.atSetpoint();
+    return thetaController.atSetpoint() && yController.atSetpoint() && xController.atSetpoint();
   }
-}
+
+  @Override
+  public void end(boolean interrupted) {
+    drivetrain.setControl(applyFieldSpeeds.withSpeeds(new ChassisSpeeds(0, 0,0)));
+  }
+
+  }
