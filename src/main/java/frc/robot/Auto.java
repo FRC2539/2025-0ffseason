@@ -18,7 +18,7 @@ import frc.robot.commands.AlignToReefCPPPID;
 import frc.robot.commands.DriveDistance;
 import frc.robot.constants.GlobalConstants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
-import frc.robot.subsystems.modeManager.ModeManager.Position;
+
 
 import java.io.IOException;
 import java.util.Optional;
@@ -28,7 +28,7 @@ import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Auto {
-    private final LoggedDashboardChooser<Command> autoChooser;
+    // private final LoggedDashboardChooser<Command> autoChooser;
     private RobotConfig config; // PathPlanner robot configuration
     private RobotContainer container;
 
@@ -44,47 +44,19 @@ public class Auto {
         setUpPathPlanner(drivetrain);
         // named commands
 
-        createNamedCommands();
+        //createNamedCommands();
         
-        autoChooser = new LoggedDashboardChooser<>("Auto Routine", AutoBuilder.buildAutoChooser());
-        SmartDashboard.putData("Auto Path", m_trajectoryField);
+        // autoChooser = new LoggedDashboardChooser<>("Auto Routine", AutoBuilder.buildAutoChooser());
+        // SmartDashboard.putData("Auto Path", m_trajectoryField);
         
     }
 
     public Command getAuto() {
-        return autoChooser.get();
+        return AutoBuilder.buildAuto("DISRUPT");
     }
 
     public void createNamedCommands() {
 
-        Command driveToRightPlaceCommand = Commands.sequence(
-           new AlignToReefCPPPID(container.drivetrain, -.184, -.05, "limelight-right")
-            ,
-            new DriveDistance( // The name has been changed here
-                this.container.drivetrain,
-                -.5,
-                180
-            )
-        );
-     
-
-        Command driveToLeftPlaceCommand = Commands.sequence(
-           new AlignToReefCPPPID(container.drivetrain, .0884, -.071, "limelight-left")
-            ,
-            new DriveDistance( // The name has been changed here
-                this.container.drivetrain,
-                -.5,
-                180
-            )
-        );
-       
-        NamedCommands.registerCommand("place", container.placer.placePiece());
-        NamedCommands.registerCommand("intake", container.placer.placePiece());
-        
-        NamedCommands.registerCommand("goto L4", container.modeManager.moveElevator(Position.L4));
-
-        NamedCommands.registerCommand("align right", driveToRightPlaceCommand);
-        NamedCommands.registerCommand("align left", driveToLeftPlaceCommand);
     }
 
     public void setUpPathPlanner(frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain drivetrain) {

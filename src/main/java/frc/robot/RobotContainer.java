@@ -23,16 +23,7 @@ import frc.robot.commands.AlignToReefVision;
 import frc.robot.commands.DriveDistance;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.drivetrain.CommandSwerveDrivetrain;
-import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.elevator.ElevatorSubsystem;
-import frc.robot.subsystems.modeManager.ModeManager;
-import frc.robot.subsystems.modeManager.ModeManager.Position;
-import frc.robot.subsystems.placer.PlacerIOSRX;
-import frc.robot.subsystems.placer.PlacerIOSim;
-import frc.robot.subsystems.placer.PlacerSubsystem;
-import frc.robot.subsystems.vision.VisionIOLimelight;
-import frc.robot.subsystems.vision.VisionSubsystem;
+
 //import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 
 
@@ -48,38 +39,26 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+   // private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final ThrustmasterJoystick rightJoystick = new ThrustmasterJoystick(1);
     private final ThrustmasterJoystick leftJoystick = new ThrustmasterJoystick(0);
 
-    private final LogitechController operatorController = new LogitechController(2);
+    //private final LogitechController operatorController = new LogitechController(2);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final ElevatorSubsystem elevator;
-    public final PlacerSubsystem placer;
 
     public final Auto auto;
-    public final ModeManager modeManager;
 
-    public final VisionSubsystem camera; 
 
     public RobotContainer() {
         
-        if(Robot.isReal()){;
-            elevator = new ElevatorSubsystem(new ElevatorIOTalonFX());
-            placer = new PlacerSubsystem(new PlacerIOSRX());
-            modeManager = new ModeManager(elevator, placer);
+        if(Robot.isReal()){;      
             // camera = new VisionSubsystem((Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) -> {
             //     drivetrain.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
             // }, new VisionIOLimelight("limelight-left", () -> drivetrain.getPigeon2().getRotation2d()), new VisionIOLimelight("limelight-right", () -> drivetrain.getPigeon2().getRotation2d()));
-            camera = null;
         }
         else {
-            elevator = new ElevatorSubsystem(new ElevatorIOSim());
-            placer = new PlacerSubsystem(new PlacerIOSim());
-            modeManager = null;
-            camera = null;
         }
 
         auto = new Auto(drivetrain, this);
@@ -100,50 +79,11 @@ public class RobotContainer {
             )
         );
 
-        rightJoystick.getRightBottomLeft().whileTrue(drivetrain.applyRequest(() -> brake));
-        rightJoystick.getRightBottomRight().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-rightJoystick.getYAxis().getRaw(), -rightJoystick.getXAxis().getRaw()))
-        ));
         
 
 
-        
-        // Run SysId routines when holding back/start and X/Y. 
-        // Note that each routine should be run exactly once in a single log.
-        
-        // rightJoystick.getTrigger().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // rightJoystick.getTrigger().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse)); stupid lets do this later
-
-        // reset the field-centric heading on left bumper press 
-        //operatorController.getLeftBumper().onTrue(elevator.setVoltage(0));
-        rightJoystick.getLeftTopLeft().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(0,0, drivetrain.getOperatorForwardDirection()))));
-        // operatorController.getX().whileTrue(placer.intake(12));
-        // operatorController.getY().onTrue(elevator.setPosition(22.5));
-        // operatorController.getX().onTrue(elevator.setPosition(8));
-        // operatorController.getA().onTrue(elevator.setPosition(0));
-
-        operatorController.getA().onTrue(Commands.parallel(modeManager.moveElevator(Position.Home), placer.intakeUntilPieceSet()));
-        operatorController.getB().onTrue(modeManager.moveElevator(Position.L2));
-        operatorController.getX().onTrue(modeManager.moveElevator(Position.L3));
-        operatorController.getY().onTrue(modeManager.moveElevator(Position.L4));
-        
-
-        //roller.getDPadUp().onTrue(placer.setVoltage(0));
-        // operatorController.getDPadUp().whileTrue(new AlignToReefBlue(drivetrain, -.0821, -.0625)); //right
-        // operatorController.getDPadUp().whileTrue(new AlignToReefCP(drivetrain, .0884, -.071));
-        operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
-
-        // operatorController.getDPadUp().whileTrue(new AlignToReefNew(drivetrain, -0.168, 5));
-        //operatorController.getDPadUp().whileTrue(new AlignToReefNew(drivetrain, 0, 5));
-       // operatorController.getDPadDown().onTrue(modeManager.moveElevator(Position.L1));
-        operatorController.getDPadLeft().onTrue(placer.placePiece());
-        operatorController.getDPadRight().onTrue(placer.intakeUntilPieceSet());
-        
-        
-
-        
-
-        // operatorController.getLeftTrigger().whileTrue(elevator.setVoltage(12));
+    
+        //atorController.getLeftTrigger().whileTrue(elevator.setVoltage(12));
         // operatorController.getRightTrigger().whileTrue(elevator.setVoltage(-12));
 
         //operatorController.getRightTrigger().onTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
@@ -151,54 +91,6 @@ public class RobotContainer {
         //operatorController.getB().whileTrue(placer.intakeUntilPieceSet());
         // operatorController.getX().onTrue(climber.upPosition());
         // operatorController.getY().onTrue(climber.downPosition());
-
-        //rightJoystick.getRightThumb().whileTrue(new AlignToReefVision(drivetrain, false, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
-        //.getLeftThumb().whileTrue(new AlignToReefVision(drivetrain, true, () -> {return -Math.pow(leftJoystick.getYAxis().getRaw(), 3) * MaxSpeed;}));
-        Command driveToRightPlaceCommand = Commands.sequence(
-           new AlignToReefCPPPID(drivetrain, 0.05, -7, "limelight-right")
-            //,
-            // new DriveDistance( // The name has been changed here
-            //     drivetrain,
-            //     -.5,
-            //     180
-            // )
-        );
-        rightJoystick.getRightThumb().whileTrue(driveToRightPlaceCommand);
-
-        Command driveToLeftPlaceCommand = Commands.sequence(
-           new AlignToReefCPPPID(drivetrain, 0.05, -3.32, "limelight-left")
-            //,
-            // new DriveDistance( // The name has been changed here
-            //     drivetrain,
-            //     -.5,
-            //     180
-            // )
-        );
-        rightJoystick.getLeftThumb().whileTrue(driveToLeftPlaceCommand);
-
-        // // Create the sequential command group: Align then Drive
-        // Command driveToPlaceCommand = Commands.sequence(
-        //     new AlignToAprilTagRelative(
-        //         drivetrain,
-        //         0,
-        //         0,
-        //         0
-        //     )
-        //     // ,
-        //     // new DriveDistance( // The name has been changed here
-        //     //     drivetrain,
-        //     //     -.20,
-        //     //     -90
-        //     // )
-        // );
-        
-        // rightJoystick.getLeftThumb().whileTrue(driveToPlaceCommand);
-
-
-        drivetrain.registerTelemetry(logger::telemeterize);
-
-    
-        rightJoystick.getTrigger().onTrue(placer.placePiece());
 
 
 
